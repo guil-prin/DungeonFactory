@@ -7,4 +7,8 @@ public class Room {
 	private boolean start;
 	private boolean finish;
 	
+	public Room() {
+		
+	}
+	
 }

@@ -32,7 +32,7 @@ public class CharacterCreatorViewPart {
 	}
 	
 	private void createLeftColumn() {
-		Composite compositeLeft = new Composite(parent, SWT.NONE);
+		Composite compositeLeft = new Composite(parent, SWT.BORDER);
         GridLayout gridLayout = new GridLayout();
         gridLayout.marginWidth = 0;
         gridLayout.marginHeight = 0;
