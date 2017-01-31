@@ -3,19 +3,19 @@ package data;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Character {
+public class Persona {
 
 	private String name;
 	private Integer hp;
 	private List<Card> deck;
 	
-	public Character() {
+	public Persona() {
 		
 	}
 	
-	public Character(String name, Integer hp) {
+	public Persona(String name) {
 		this.name = name;
-		this.hp = hp;
+		this.hp = 20;
 		deck = new ArrayList<>();
 	}
 	
