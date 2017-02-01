@@ -26,5 +26,15 @@ public class Dungeon {
 	public Integer sizeOfPersonas() {
 		return personas.size();
 	}
+
+	public List<Persona> getPersonas() {
+		return personas;
+	}
+
+	public void setPersonas(List<Persona> personas) {
+		this.personas = personas;
+	}
+	
+	
 	
 }

@@ -1,5 +1,7 @@
 package data;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,8 @@ public class Persona {
 	private String name;
 	private Integer hp;
 	private List<Card> deck;
+	
+	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 	
 	public Persona() {
 		
@@ -40,6 +44,14 @@ public class Persona {
 	
 	public Integer sizeOfDeck() {
 		return deck.size();
+	}
+	
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		propertyChangeSupport.addPropertyChangeListener(listener);
+	}
+
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
 	}
 	
 }
