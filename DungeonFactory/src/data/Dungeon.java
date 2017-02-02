@@ -23,6 +23,10 @@ public class Dungeon {
 		personas.add(p);
 	}
 	
+	public void removePersona(Persona p) {
+		personas.remove(p);
+	}
+	
 	public Integer sizeOfPersonas() {
 		return personas.size();
 	}

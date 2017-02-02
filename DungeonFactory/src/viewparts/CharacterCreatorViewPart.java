@@ -32,7 +32,7 @@ public class CharacterCreatorViewPart {
 	
 	private Composite compositeLeft, compositeRight;
 	private GridData leftData, rightData;
-	private Table tablePersonas;
+	private Table tablePersonas, tableCards;
 	private Text textName;
 	private Spinner textHP;
 	private Button deleteCharacter;
@@ -148,27 +148,87 @@ public class CharacterCreatorViewPart {
         rightData = new GridData(SWT.FILL, SWT.FILL, true, true);
         compositeRight.setLayoutData(rightData);
         
-        GridLayout gl = new GridLayout(4, false);
+        // Character edit block
+        GridLayout gl = new GridLayout(6, false);
         compositeRight.setLayout(gl);
         Label labelName = new Label(compositeRight, SWT.NONE);
         labelName.setText("Nom : ");
         GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalSpan = 3;
         textName = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
         textName.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
         textName.setEnabled(false);
         textName.setLayoutData(gd);
-        
         Label labelHP = new Label(compositeRight, SWT.NONE);
         labelHP.setText("HP : ");
-        
         textHP = new Spinner(compositeRight, SWT.BORDER | SWT.SEARCH);
         textHP.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
         textHP.setEnabled(false);
+        // End of character edit block
+        
+        Label separator = new Label(compositeRight, SWT.HORIZONTAL | SWT.SEPARATOR);
+        GridData gdSeparator = new GridData(GridData.FILL_HORIZONTAL);
+        gdSeparator.horizontalSpan = 6;
+        separator.setLayoutData(gdSeparator);
+        
+        // Card edit block
+        Label labelCardName = new Label(compositeRight, SWT.NONE);
+        labelCardName.setText("Nom de la carte");
+        Label labelCardTag = new Label(compositeRight, SWT.NONE);
+        labelCardTag.setText("Tag de la carte");
+        Label labelCarteDesc = new Label(compositeRight, SWT.NONE);
+        labelCarteDesc.setText("Description de la carte");
+        Label labelCardPower = new Label(compositeRight, SWT.NONE);
+        labelCardPower.setText("Force");
+        Label labelQty = new Label(compositeRight, SWT.NONE);
+        labelQty.setText("Quantité");
+        Label sep = new Label(compositeRight, SWT.HORIZONTAL | SWT.SEPARATOR);
+        GridData gdSep = new GridData(GridData.FILL_HORIZONTAL);
+        sep.setLayoutData(gdSep);
+        
+        Text textCardName = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
+        textCardName.setEnabled(false);
+        Text textCardTag = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
+        textCardTag.setEnabled(false);
+        Text textCardDesc = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
+        textCardDesc.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+        textCardDesc.setEnabled(false);
+        Text textCardPower = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
+        textCardPower.setEnabled(false);
+        Text textCardQty = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
+        textCardQty.setEnabled(false);
+        Button addCard = new Button(compositeRight, SWT.NONE);
+        GridData buttonGd = new GridData(GridData.FILL_HORIZONTAL);
+        addCard.setLayoutData(buttonGd);
+        addCard.setText("+");
+        // End of card edit block
+        
+        GridData gd_table = new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1);
+        tableCards = new Table(compositeRight, SWT.BORDER | SWT.V_SCROLL);
+        tableCards.setLayoutData(gd_table);
+        tableCards.setLinesVisible(false);
+        tableCards.setHeaderVisible(false);
         
         
         deleteCharacter = new Button(compositeRight, SWT.NONE);
         deleteCharacter.setText("Supprimer");
         deleteCharacter.setEnabled(false);
+        
+        deleteCharacter.addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				int indexOfPersona = tablePersonas.getSelectionIndex();
+				Persona personaToDelete = (Persona) tablePersonas.getItem(indexOfPersona).getData();
+				tablePersonas.remove(indexOfPersona);
+				dungeon.removePersona(personaToDelete);
+				textName.setText("");
+				textHP.setSelection(0);
+				textName.setEnabled(false);
+				textHP.setEnabled(false);
+				deleteCharacter.setEnabled(false);
+			}
+		});
         
 	}
 	
