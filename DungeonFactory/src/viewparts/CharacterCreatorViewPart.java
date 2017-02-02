@@ -7,6 +7,9 @@ import javax.inject.Inject;
 import javax.annotation.PostConstruct;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -27,7 +30,12 @@ public class CharacterCreatorViewPart {
 	private Composite parent;
 	private Dungeon dungeon;
 	
-	private Table table;
+	private Composite compositeLeft, compositeRight;
+	private GridData leftData, rightData;
+	private Table tablePersonas;
+	private Text textName;
+	private Spinner textHP;
+	private Button deleteCharacter;
 	
 	@Inject
 	public CharacterCreatorViewPart() {
@@ -41,102 +49,126 @@ public class CharacterCreatorViewPart {
 		buildUI();
 	}
 	
+	/**
+	 * Builds the UI
+	 */
 	private void buildUI() {
 		parent.setLayout(new GridLayout(2, false));
 		this.createLeftColumn();
 		this.createRightColumn();
+		
+		parent.addListener(SWT.Resize, new Listener()
+	    {
+	        @Override
+	        public void handleEvent(Event arg0)
+	        {
+	            Point size = parent.getSize();
+
+	            leftData.widthHint = (int) (size.x * 0.3);
+	            rightData.widthHint = size.x - leftData.widthHint;
+	        }
+	    });
 	}
 	
+	/**
+	 * Builds the left part of the UI : Character creation and display.
+	 */
 	private void createLeftColumn() {
-		Composite compositeLeft = new Composite(parent, SWT.BORDER);
-		
-        GridLayout gridLayout = new GridLayout();
-        gridLayout.marginWidth = 0;
-        gridLayout.marginHeight = 0;
-        gridLayout.marginLeft = 0;
-        gridLayout.marginRight= 0;
-        gridLayout.marginTop = 0;
-        gridLayout.marginBottom = 0;
-        gridLayout.horizontalSpacing = 0;
-
-        gridLayout.verticalSpacing = 0;
-        gridLayout.horizontalSpacing = 0;
-        compositeLeft.setLayout(gridLayout);
-        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-        compositeLeft.setLayoutData(gridData);
-
-        Label label = new Label(compositeLeft, SWT.NONE);
-        label.setText("Nouveau personnage : ");
+		compositeLeft = new Composite(parent, SWT.BORDER);
+        leftData = new GridData(SWT.FILL, SWT.FILL, true, true);
+        compositeLeft.setLayoutData(leftData);
         
-        Text text = new Text(compositeLeft, SWT.BORDER | SWT.SEARCH);
-        text.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+        // Block New character
+        GridLayout gl = new GridLayout(3, false);
+        compositeLeft.setLayout(gl);
+        Label namePersonaLabel = new Label(compositeLeft, SWT.NONE);
+        namePersonaLabel.setText("Nouveau perso :");
+        GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+        Text namePersonaField = new Text(compositeLeft, SWT.BORDER | SWT.SINGLE);
+        namePersonaField.setLayoutData(gd);
+        Button addPersonaButton = new Button(compositeLeft, SWT.BORDER);
+        addPersonaButton.setText("+");
+        // End of block New Character
         
-        Button add = new Button(compositeLeft, SWT.BORDER);
-        add.setText("+");
+        GridData gd_table = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
+        tablePersonas = new Table(compositeLeft, SWT.BORDER | SWT.V_SCROLL);
+        tablePersonas.setLayoutData(gd_table);
+        tablePersonas.setLinesVisible(false);
+        tablePersonas.setHeaderVisible(false);
         
-        
-        table = new Table(compositeLeft, SWT.BORDER | SWT.V_SCROLL);
-        table.setLinesVisible(false);
-        table.setHeaderVisible(false);
         
         for (Persona p : dungeon.getPersonas()) {
-            TableItem item = new TableItem(table, SWT.NULL);
+            TableItem item = new TableItem(tablePersonas, SWT.NULL);
+            item.setData(p);
             item.setText(p.getName());
         }
         
         
-    	add.addListener(SWT.Selection, new Listener() {
+        // Block listeners
+    	addPersonaButton.addListener(SWT.Selection, new Listener() {
 			
 			@Override
 			public void handleEvent(Event event) {
-				Persona persona = new Persona(text.getText());
+				Persona persona = new Persona(namePersonaField.getText());
 				dungeon.addPersona(persona);
 				System.out.println(persona.getName() + " - " + persona.getHp() + " hp");
 				System.out.println(dungeon.sizeOfPersonas() + " characters");
-				TableItem item = new TableItem(table, SWT.NULL);
-	            item.setText(persona.getName());
-	            text.setText("");
+				TableItem item = new TableItem(tablePersonas, SWT.NULL);
+	            item.setData(persona);
+				item.setText(persona.getName());
+	            namePersonaField.setText("");
 			}
 		});
+    	tablePersonas.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				textName.setText(((Persona) e.item.getData()).getName());
+				textHP.setSelection(((Persona) e.item.getData()).getHp());
+				textName.setEnabled(true);
+				textHP.setEnabled(true);
+				deleteCharacter.setEnabled(true);
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				
+			}
+		});
+    	// End of block listeners
     	
         compositeLeft.pack();
 	}
 	
+	/**
+	 * Creates the right part of the UI : Modify selected character stats and cards.
+	 */
 	private void createRightColumn() {
-		Composite compositeLeft = new Composite(parent, SWT.BORDER);
-		
-        GridLayout gridLayout = new GridLayout();
-        gridLayout.marginWidth = 0;
-        gridLayout.marginHeight = 0;
-        gridLayout.marginLeft = 0;
-        gridLayout.marginRight= 0;
-        gridLayout.marginTop = 0;
-        gridLayout.marginBottom = 0;
-        gridLayout.horizontalSpacing = 0;
-
-        gridLayout.verticalSpacing = 0;
-        gridLayout.horizontalSpacing = 0;
-        compositeLeft.setLayout(gridLayout);
-        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-        compositeLeft.setLayoutData(gridData);
+		compositeRight = new Composite(parent, SWT.BORDER);
+        rightData = new GridData(SWT.FILL, SWT.FILL, true, true);
+        compositeRight.setLayoutData(rightData);
         
-        Label labelName = new Label(compositeLeft, SWT.NONE);
+        GridLayout gl = new GridLayout(4, false);
+        compositeRight.setLayout(gl);
+        Label labelName = new Label(compositeRight, SWT.NONE);
         labelName.setText("Nom : ");
-        
-        Text textName = new Text(compositeLeft, SWT.BORDER | SWT.SEARCH);
+        GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+        textName = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
         textName.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
         textName.setEnabled(false);
+        textName.setLayoutData(gd);
         
-        Label labelHP = new Label(compositeLeft, SWT.NONE);
-        labelHP.setText("HP du personnage : ");
+        Label labelHP = new Label(compositeRight, SWT.NONE);
+        labelHP.setText("HP : ");
         
-        Spinner textHP = new Spinner(compositeLeft, SWT.BORDER | SWT.SEARCH);
+        textHP = new Spinner(compositeRight, SWT.BORDER | SWT.SEARCH);
         textHP.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
         textHP.setEnabled(false);
         
-        Button delete = new Button(compositeLeft, SWT.NONE);
-        delete.setText("Supprimer le personnage");
-        delete.setEnabled(false);
+        
+        deleteCharacter = new Button(compositeRight, SWT.NONE);
+        deleteCharacter.setText("Supprimer");
+        deleteCharacter.setEnabled(false);
         
 	}
 	
