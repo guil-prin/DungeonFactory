@@ -39,10 +39,20 @@ public class Dungeon {
 		this.personas = personas;
 	}
 	
-	public boolean isPersonaExists(String name) {
+	public boolean isPersonaExists( String name) {
 		boolean found = false;
-		for(Persona p : personas) {
-			if(p.getName().equals(name)) {
+		for(Persona pers : personas) {
+			if(pers.getName().equals(name)) {
+				found = true;
+			}
+		}
+		return found;
+	}
+	
+	public boolean isPersonaExists(Persona p, String name) {
+		boolean found = false;
+		for(Persona pers : personas) {
+			if(pers.getName().equals(name) && !(pers.equals(p))) {
 				found = true;
 			}
 		}

@@ -10,6 +10,8 @@ import javax.annotation.PostConstruct;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
@@ -38,8 +40,8 @@ public class CharacterCreatorViewPart {
 	private Composite compositeLeft, compositeRight;
 	private GridData leftData, rightData;
 	private Table tablePersonas, tableCards;
-	private Text textName, textCardName, textCardTag, textCardDesc, textCardPower, textCardQty, namePersonaField;
-	private Spinner textHP;
+	private Text textName, textCardName, textCardTag, textCardDesc, namePersonaField;
+	private Spinner textHP, textCardPower, textCardQty;
 	private Button addPersonaButton, deleteCharacter, addCard;
 	
 	@Inject
@@ -153,13 +155,14 @@ public class CharacterCreatorViewPart {
         textCardName.setEnabled(false);
         textCardTag = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
         textCardTag.setEnabled(false);
-        textCardDesc = new Text(compositeRight, SWT.MULTI | SWT.BORDER);
+        textCardDesc = new Text(compositeRight, SWT.BORDER);
         textCardDesc.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
         textCardDesc.setEnabled(false);
-        textCardPower = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
+        textCardPower = new Spinner(compositeRight, SWT.BORDER | SWT.SEARCH);
         textCardPower.setEnabled(false);
-        textCardQty = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
+        textCardQty = new Spinner(compositeRight, SWT.BORDER | SWT.SEARCH);
         textCardQty.setEnabled(false);
+        textCardQty.setMinimum(1);
         addCard = new Button(compositeRight, SWT.NONE);
         GridData buttonGd = new GridData(GridData.FILL_HORIZONTAL);
         addCard.setLayoutData(buttonGd);
@@ -297,6 +300,62 @@ public class CharacterCreatorViewPart {
 				item.setText(2, textCardDesc.getText());
 				item.setText(3, textCardPower.getText());
 				item.setText(4, textCardQty.getText());
+			}
+		});
+    	
+    	tableCards.addListener(SWT.Resize, new Listener()
+	    {
+	        @Override
+	        public void handleEvent(Event arg0)
+	        {
+	            Point size = tableCards.getSize();
+	            
+	            TableColumn[] columns = tableCards.getColumns();
+	            columns[0].setWidth((int)(size.x*0.1));
+	            columns[1].setWidth((int)(size.x*0.1));
+	            columns[2].setWidth((int)(size.x*0.6));
+	            columns[3].setWidth((int)(size.x*0.1));
+	            columns[4].setWidth((int)(size.x*0.1));
+	        }
+	    });
+    	
+    	textName.addFocusListener(new FocusListener() {
+    		
+    		String oldName = "";
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				String name = textName.getText();
+				int indexOfPersona = tablePersonas.getSelectionIndex();
+				Persona p = (Persona) tablePersonas.getItem(indexOfPersona).getData();
+				if(!dungeon.isPersonaExists(p, name)) {
+					tablePersonas.getItem(indexOfPersona).setText(name);
+					p.setName(name);
+				}
+				else {
+					MessageDialog.openWarning(parent.getShell(), "Erreur", "Ce nom de personnage existe déjà, retour à son nom précédent.");
+					textName.setText(oldName);
+				}
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				oldName = textName.getText();
+			}
+		});
+    	
+    	textHP.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				Integer hp = Integer.parseInt(textHP.getText());
+				int indexOfPersona = tablePersonas.getSelectionIndex();
+				Persona p = (Persona) tablePersonas.getItem(indexOfPersona).getData();
+				p.setHp(hp);
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
 			}
 		});
 	}
