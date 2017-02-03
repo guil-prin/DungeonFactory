@@ -39,6 +39,14 @@ public class Dungeon {
 		this.personas = personas;
 	}
 	
-	
+	public boolean isPersonaExists(String name) {
+		boolean found = false;
+		for(Persona p : personas) {
+			if(p.getName().equals(name)) {
+				found = true;
+			}
+		}
+		return found;
+	}
 	
 }

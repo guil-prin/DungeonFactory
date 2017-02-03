@@ -46,6 +46,24 @@ public class Persona {
 		return deck.size();
 	}
 	
+	public void addCardInDeck(Card c) {
+		deck.add(c);
+	}
+	
+	public void removeCardInDeck(Card c) {
+		deck.remove(c);
+	}
+	
+	public Integer numberOfCard(Card c) {
+		Integer nb = 0;
+		for(Card check : deck) {
+			if(c.equals(check)) {
+				nb++;
+			}
+		}
+		return nb;
+	}
+	
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		propertyChangeSupport.addPropertyChangeListener(listener);
 	}
