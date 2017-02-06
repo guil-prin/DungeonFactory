@@ -54,6 +54,7 @@ public class CharacterCreatorViewPart {
 		this.parent = parent; 
 		dungeon = Dungeon.getInstance();
 		buildUI();
+		
 	}
 	
 	/**
