@@ -25,13 +25,16 @@ import data.Room;
 
 public class DungeonCreatorViewPart {
 	
+	private Integer id;
+	
 	private Composite parent;
 	private Dungeon dungeon;
 	
 	private Composite compositeLeft, compositeRight;
 	private GridData leftData, rightData;
-	private Button newRoomButton;
+	private Button newRoomButton, checkFinal;
 	private Table tableRooms;
+	private Text roomName, roomDesc;
 	
 	@Inject
 	public DungeonCreatorViewPart() {
@@ -42,6 +45,7 @@ public class DungeonCreatorViewPart {
 	public void postConstruct(Composite parent) {
 		this.parent = parent;
 		dungeon = Dungeon.getInstance();
+		this.id = dungeon.sizeOfRooms() + 1;
 		buildUI();
 	}
 	
@@ -61,14 +65,14 @@ public class DungeonCreatorViewPart {
         leftData = new GridData(SWT.FILL, SWT.FILL, true, true);
         compositeLeft.setLayoutData(leftData);
         
-        // Block New character
+        // Button new room
         GridLayout gl = new GridLayout(1, false);
         compositeLeft.setLayout(gl);
         GridData gd = new GridData(GridData.FILL_HORIZONTAL);
         newRoomButton = new Button(compositeLeft, SWT.BORDER);
         newRoomButton.setText("Nouvelle salle");
         newRoomButton.setLayoutData(gd);
-        // End of block New Character
+        // End of button new room
         
         GridData gd_table = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
         tableRooms = new Table(compositeLeft, SWT.BORDER | SWT.V_SCROLL);
@@ -92,25 +96,33 @@ public class DungeonCreatorViewPart {
 		compositeRight = new Composite(parent, SWT.BORDER);
         rightData = new GridData(SWT.FILL, SWT.FILL, true, true);
         compositeRight.setLayoutData(rightData);
-        /*
-        // Character edit block
-        GridLayout gl = new GridLayout(6, false);
+        
+        // Room edit block
+        GridLayout gl = new GridLayout(2, false);
         compositeRight.setLayout(gl);
         Label labelName = new Label(compositeRight, SWT.NONE);
         labelName.setText("Nom : ");
         GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-        gd.horizontalSpan = 3;
-        textName = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
-        textName.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-        textName.setEnabled(false);
-        textName.setLayoutData(gd);
-        Label labelHP = new Label(compositeRight, SWT.NONE);
-        labelHP.setText("HP : ");
-        textHP = new Spinner(compositeRight, SWT.BORDER | SWT.SEARCH);
-        textHP.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-        textHP.setEnabled(false);
-        // End of character edit block
+        roomName = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
+        roomName.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+        roomName.setEnabled(false);
+        roomName.setLayoutData(gd);
+        Label labelDesc = new Label(compositeRight, SWT.NONE);
+        labelDesc.setText("Description : ");
+        roomDesc = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
+        roomDesc.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
+        roomDesc.setEnabled(false);
+        roomDesc.setLayoutData(gd);
+        Label labelFinish = new Label(compositeRight, SWT.NONE);
+        labelFinish.setText("Salle finale ?");
+        checkFinal = new Button(compositeRight, SWT.CHECK);
+        checkFinal.setLayoutData(gd);
+        checkFinal.setEnabled(false);
+        // End of room edit block
         
+        
+        
+        /*
         Label separator = new Label(compositeRight, SWT.HORIZONTAL | SWT.SEPARATOR);
         GridData gdSeparator = new GridData(GridData.FILL_HORIZONTAL);
         gdSeparator.horizontalSpan = 6;
@@ -180,6 +192,19 @@ public class DungeonCreatorViewPart {
 	            rightData.widthHint = size.x - leftData.widthHint;
 	        }
 	    });
+		
+		newRoomButton.addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				Room r = new Room(id, "Room " + id, "A new room", false);
+				dungeon.addRoom(r);
+				TableItem item = new TableItem(tableRooms, SWT.NONE);
+				item.setData(r);
+				item.setText(r.getName());
+				id++;
+			}
+		});
 	}
 	
 }
