@@ -7,9 +7,12 @@ public class Dungeon {
 
 	private static Dungeon dungeon = null;
 	private List<Persona> personas;
+	private List<Room> rooms;
 	
 	private Dungeon() {
 		personas = new ArrayList<>();
+		rooms = new ArrayList<>();
+		rooms.add(new Room(1, "Room1", "My first room", true, false));
 	}
 	
 	public static final Dungeon getInstance() {
@@ -39,7 +42,7 @@ public class Dungeon {
 		this.personas = personas;
 	}
 	
-	public boolean isPersonaExists( String name) {
+	public boolean isPersonaExists(String name) {
 		boolean found = false;
 		for(Persona pers : personas) {
 			if(pers.getName().equals(name)) {
@@ -57,6 +60,10 @@ public class Dungeon {
 			}
 		}
 		return found;
+	}
+	
+	public List<Room> getRooms() {
+		return rooms;
 	}
 	
 }

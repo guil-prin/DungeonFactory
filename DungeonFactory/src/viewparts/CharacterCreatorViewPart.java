@@ -291,16 +291,21 @@ public class CharacterCreatorViewPart {
 				int indexOfPersona = tablePersonas.getSelectionIndex();
 				Persona p = (Persona) tablePersonas.getItem(indexOfPersona).getData();
 				Card c = new Card(textCardName.getText(), textCardTag.getText(), textCardDesc.getText(), Integer.parseInt(textCardPower.getText()));
-				for(int i = 0 ; i < Integer.parseInt(textCardQty.getText()) ; i++) {
-					p.addCardInDeck(c);
+				if(!p.isThisCardInDeck(c)) {
+					for(int i = 0 ; i < Integer.parseInt(textCardQty.getText()) ; i++) {
+						p.addCardInDeck(c);
+					}
+					TableItem item = new TableItem(tableCards, SWT.NONE);
+					item.setData(c);
+					item.setText(0, textCardName.getText());
+					item.setText(1, textCardTag.getText());
+					item.setText(2, textCardDesc.getText());
+					item.setText(3, textCardPower.getText());
+					item.setText(4, textCardQty.getText());
 				}
-				TableItem item = new TableItem(tableCards, SWT.NONE);
-				item.setData(c);
-				item.setText(0, textCardName.getText());
-				item.setText(1, textCardTag.getText());
-				item.setText(2, textCardDesc.getText());
-				item.setText(3, textCardPower.getText());
-				item.setText(4, textCardQty.getText());
+				else {
+					MessageDialog.openWarning(parent.getShell(), "Erreur", "Une carte avec ce tag existe déjà.");
+				}
 			}
 		});
     	

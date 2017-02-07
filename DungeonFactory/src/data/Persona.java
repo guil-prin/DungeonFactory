@@ -64,6 +64,21 @@ public class Persona {
 		return nb;
 	}
 	
+	public boolean isThisCardInDeck(Card c) {
+		boolean found = false;
+		int i = 0;
+		int size = this.sizeOfDeck();
+		while(found == false && i < size) {
+			Card check = deck.get(i);
+			System.out.println("Check it !");
+			if((check.getTag()).equals(c.getTag())) {
+				found = true;
+			}
+			i++;
+		}
+		return found;
+	}
+	
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		propertyChangeSupport.addPropertyChangeListener(listener);
 	}
