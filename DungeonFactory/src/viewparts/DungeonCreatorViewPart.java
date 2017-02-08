@@ -2,6 +2,10 @@
 package viewparts;
 
 import javax.inject.Inject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
 import org.eclipse.swt.SWT;
@@ -20,14 +24,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 import data.Dungeon;
-import data.Persona;
+import data.Link;
 import data.Room;
 
 public class DungeonCreatorViewPart {
@@ -39,7 +42,7 @@ public class DungeonCreatorViewPart {
 	
 	private Composite compositeLeft, compositeRight;
 	private GridData leftData, rightData;
-	private Button newRoomButton, checkFinal;
+	private Button newRoomButton, checkFinal, linkButton, checkAccessible;
 	private Table tableRooms, tableLinks;
 	private Text roomName, roomDesc;
 	private CTabFolder folder;
@@ -152,17 +155,27 @@ public class DungeonCreatorViewPart {
 	
 	private void manageLinks() {
 		Composite c = new Composite(folder, SWT.NONE);
-		c.setLayout(new GridLayout(2, false));
+		c.setLayout(new GridLayout(3, false));
 		roomList = new Combo(c, SWT.READ_ONLY);
 		roomList.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
-		Button b = new Button(c, SWT.BORDER);
-		b.setText("Lier à cette salle");
-		b.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
+		checkAccessible = new Button(c, SWT.CHECK);
+		checkAccessible.setText("Salle accessible nativement ?");
+		linkButton = new Button(c, SWT.BORDER);
+		linkButton.setText("Lier à cette salle");
+		linkButton.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
+		String[] titles = { "Salle", "Accessible" };
         tableLinks = new Table(c, SWT.BORDER | SWT.V_SCROLL);
-        tableLinks.setLinesVisible(false);
-        tableLinks.setHeaderVisible(false);
+        tableLinks.setLinesVisible(true);
+        tableLinks.setHeaderVisible(true);
+        for (int loopIndex = 0; loopIndex < titles.length; loopIndex++) {
+            TableColumn column = new TableColumn(tableLinks, SWT.NULL);
+            column.setText(titles[loopIndex]);
+        }
+        for (int loopIndex = 0; loopIndex < titles.length; loopIndex++) {
+        	tableLinks.getColumn(loopIndex).pack();
+        }
         GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
-        gd.horizontalSpan = 2;
+        gd.horizontalSpan = 3;
         tableLinks.setLayoutData(gd);
         linkTab.setControl(c);
 	}
@@ -205,11 +218,34 @@ public class DungeonCreatorViewPart {
 				roomDesc.setEnabled(true);
 				checkFinal.setEnabled(true);
 				folder.setEnabled(true);
+				
+				this.fillTheLinks();
 			}
 			
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				
+			}
+			
+			private void fillTheLinks() {
+				tableLinks.removeAll();
+				roomList.removeAll();
+				int indexOfRoom = tableRooms.getSelectionIndex();
+				Room selectedRoom = (Room) tableRooms.getItem(indexOfRoom).getData();
+				List<Room> dRooms = new ArrayList<>();
+				dRooms.add(selectedRoom);
+				List<Link> links = selectedRoom.getLinks();
+				for(Link l : links) {
+					TableItem item = new TableItem(tableLinks, SWT.NONE);
+					item.setData(l);
+					item.setText(0, l.getNextRoom().getId() + " - " + l.getNextRoom().getName());
+					item.setText(1, String.valueOf(l.isAccessible()));
+					dRooms.add(l.getNextRoom());
+				}
+				for(Room r : dungeon.getRooms()) {
+					if(!dRooms.contains(r))
+						roomList.add(r.getId() + " - " + r.getName());
+				}
 			}
 		});
 		

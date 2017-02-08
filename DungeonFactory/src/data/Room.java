@@ -75,6 +75,14 @@ public class Room {
 	public void setFinish(boolean finish) {
 		this.finish = finish;
 	}
+
+	public List<Link> getLinks() {
+		return links;
+	}
+
+	public void setLinks(List<Link> links) {
+		this.links = links;
+	}
 	
 	
 	
