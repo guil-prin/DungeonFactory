@@ -5,10 +5,17 @@ import javax.inject.Inject;
 import javax.annotation.PostConstruct;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -33,8 +40,11 @@ public class DungeonCreatorViewPart {
 	private Composite compositeLeft, compositeRight;
 	private GridData leftData, rightData;
 	private Button newRoomButton, checkFinal;
-	private Table tableRooms;
+	private Table tableRooms, tableLinks;
 	private Text roomName, roomDesc;
+	private CTabFolder folder;
+	private CTabItem eventTab, linkTab;
+	private Combo roomList;
 	
 	@Inject
 	public DungeonCreatorViewPart() {
@@ -120,64 +130,41 @@ public class DungeonCreatorViewPart {
         checkFinal.setEnabled(false);
         // End of room edit block
         
-        
-        
-        /*
-        Label separator = new Label(compositeRight, SWT.HORIZONTAL | SWT.SEPARATOR);
-        GridData gdSeparator = new GridData(GridData.FILL_HORIZONTAL);
-        gdSeparator.horizontalSpan = 6;
-        separator.setLayoutData(gdSeparator);
-        
-        // Card edit block
-        Label labelCardName = new Label(compositeRight, SWT.NONE);
-        labelCardName.setText("Nom de la carte");
-        Label labelCardTag = new Label(compositeRight, SWT.NONE);
-        labelCardTag.setText("Tag de la carte");
-        Label labelCarteDesc = new Label(compositeRight, SWT.NONE);
-        labelCarteDesc.setText("Description de la carte");
-        Label labelCardPower = new Label(compositeRight, SWT.NONE);
-        labelCardPower.setText("Force");
-        Label labelQty = new Label(compositeRight, SWT.NONE);
-        labelQty.setText("Quantité");
-        Label labelAdd = new Label(compositeRight, SWT.NONE);
-        labelAdd.setText("Ajouter");
-        
-        textCardName = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
-        textCardName.setEnabled(false);
-        textCardTag = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
-        textCardTag.setEnabled(false);
-        textCardDesc = new Text(compositeRight, SWT.BORDER);
-        textCardDesc.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-        textCardDesc.setEnabled(false);
-        textCardPower = new Spinner(compositeRight, SWT.BORDER | SWT.SEARCH);
-        textCardPower.setEnabled(false);
-        textCardQty = new Spinner(compositeRight, SWT.BORDER | SWT.SEARCH);
-        textCardQty.setEnabled(false);
-        textCardQty.setMinimum(1);
-        addCard = new Button(compositeRight, SWT.NONE);
-        GridData buttonGd = new GridData(GridData.FILL_HORIZONTAL);
-        addCard.setLayoutData(buttonGd);
-        addCard.setText("+");
-        addCard.setEnabled(false);
-        // End of card edit block
-        
-        // Card display block
-        GridData gd_table = new GridData(SWT.FILL, SWT.FILL, true, true, 6, 1);
-        tableCards = new Table(compositeRight, SWT.BORDER | SWT.FULL_SELECTION | SWT.V_SCROLL);
-        tableCards.setLayoutData(gd_table);
-        String[] titles = { "Nom", "Tag", "Description", "Force", "Quantité" };
-        tableCards.setLinesVisible(true);
-        tableCards.setHeaderVisible(true);
-        for (int loopIndex = 0; loopIndex < titles.length; loopIndex++) {
-            TableColumn column = new TableColumn(tableCards, SWT.NULL);
-            column.setText(titles[loopIndex]);
-        }
-        
-        for (int loopIndex = 0; loopIndex < titles.length; loopIndex++) {
-        	tableCards.getColumn(loopIndex).pack();
-        }
-        // End of card display block
-        */
+        // Event and Links edit block
+        folder = new CTabFolder(compositeRight, SWT.TOP);
+        GridData data = new GridData(SWT.FILL,
+                SWT.FILL, true, true,
+                2, 1);
+        folder.setLayoutData(data);
+        eventTab = new CTabItem(folder, SWT.BORDER);
+        eventTab.setText("Gestion des évènements");
+        this.manageEvents();
+        linkTab = new CTabItem(folder, SWT.BORDER);
+        linkTab.setText("Gestion des liens");
+        this.manageLinks();
+        folder.setEnabled(false);
+        // End of event and links edit block
+	}
+	
+	private void manageEvents() {
+		
+	}
+	
+	private void manageLinks() {
+		Composite c = new Composite(folder, SWT.NONE);
+		c.setLayout(new GridLayout(2, false));
+		roomList = new Combo(c, SWT.READ_ONLY);
+		roomList.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
+		Button b = new Button(c, SWT.BORDER);
+		b.setText("Lier à cette salle");
+		b.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
+        tableLinks = new Table(c, SWT.BORDER | SWT.V_SCROLL);
+        tableLinks.setLinesVisible(false);
+        tableLinks.setHeaderVisible(false);
+        GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+        gd.horizontalSpan = 2;
+        tableLinks.setLayoutData(gd);
+        linkTab.setControl(c);
 	}
 	
 	private void addListeners() {
@@ -203,6 +190,75 @@ public class DungeonCreatorViewPart {
 				item.setData(r);
 				item.setText(r.getName());
 				id++;
+			}
+		});
+		
+		tableRooms.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Room r = (Room) e.item.getData();
+				roomName.setText(r.getName());
+				roomDesc.setText(r.getDescription());
+				checkFinal.setSelection(r.isFinish());
+				roomName.setEnabled(true);
+				roomDesc.setEnabled(true);
+				checkFinal.setEnabled(true);
+				folder.setEnabled(true);
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				
+			}
+		});
+		
+		roomName.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				int indexOfRoom = tableRooms.getSelectionIndex();
+				Room r = (Room) tableRooms.getItem(indexOfRoom).getData();
+				r.setName(roomName.getText());
+				tableRooms.getItem(indexOfRoom).setText(roomName.getText());
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		roomDesc.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				int indexOfRoom = tableRooms.getSelectionIndex();
+				Room r = (Room) tableRooms.getItem(indexOfRoom).getData();
+				r.setDescription(roomDesc.getText());	
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		checkFinal.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				int indexOfRoom = tableRooms.getSelectionIndex();
+				Room r = (Room) tableRooms.getItem(indexOfRoom).getData();
+				r.setFinish(!r.isFinish());	
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 	}

@@ -10,7 +10,7 @@ public class Room {
 	private String description;
 	private boolean start;
 	private boolean finish;
-	private List<Links> links;
+	private List<Link> links;
 	
 	public Room() {
 		
