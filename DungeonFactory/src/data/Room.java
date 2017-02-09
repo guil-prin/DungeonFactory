@@ -84,6 +84,12 @@ public class Room {
 		this.links = links;
 	}
 	
+	public void addLink(Link l) {
+		links.add(l);
+	}
 	
+	public void removeLink(Link l) {
+		links.remove(l);
+	}
 	
 }

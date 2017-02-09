@@ -42,7 +42,7 @@ public class DungeonCreatorViewPart {
 	
 	private Composite compositeLeft, compositeRight;
 	private GridData leftData, rightData;
-	private Button newRoomButton, checkFinal, linkButton, checkAccessible;
+	private Button newRoomButton, checkFinal, linkButton, checkAccessible, removeRoom, removeLink;
 	private Table tableRooms, tableLinks;
 	private Text roomName, roomDesc;
 	private CTabFolder folder;
@@ -58,7 +58,7 @@ public class DungeonCreatorViewPart {
 	public void postConstruct(Composite parent) {
 		this.parent = parent;
 		dungeon = Dungeon.getInstance();
-		this.id = dungeon.sizeOfRooms() + 1;
+		this.id = dungeon.sizeOfRooms();
 		buildUI();
 	}
 	
@@ -177,6 +177,8 @@ public class DungeonCreatorViewPart {
         GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
         gd.horizontalSpan = 3;
         tableLinks.setLayoutData(gd);
+        removeLink = new Button(c, SWT.BORDER);
+        removeLink.setText("Retirer le lien");
         linkTab.setControl(c);
 	}
 	
@@ -238,7 +240,7 @@ public class DungeonCreatorViewPart {
 				for(Link l : links) {
 					TableItem item = new TableItem(tableLinks, SWT.NONE);
 					item.setData(l);
-					item.setText(0, l.getNextRoom().getId() + " - " + l.getNextRoom().getName());
+					item.setText(0, l.getNextRoom().getName());
 					item.setText(1, String.valueOf(l.isAccessible()));
 					dRooms.add(l.getNextRoom());
 				}
@@ -295,6 +297,57 @@ public class DungeonCreatorViewPart {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				// TODO Auto-generated method stub
 				
+			}
+		});
+		
+		linkButton.addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				int index = roomList.getSelectionIndex();
+				if(index != -1) {
+					String roomId =  roomList.getItem(index).split(" - ")[0];
+					Room r = dungeon.getRoomById(Integer.parseInt(roomId));
+					boolean checked = checkAccessible.getSelection();
+					Link l = new Link(r, checked);
+					int indexOfRoom = tableRooms.getSelectionIndex();
+					Room workingRoom = (Room) tableRooms.getItem(indexOfRoom).getData();
+					workingRoom.addLink(l);
+					TableItem item = new TableItem(tableLinks, SWT.NONE);
+					item.setText(0, r.getName());
+					item.setText(1, String.valueOf(checked));
+					item.setData(l);
+					roomList.remove(index);
+				}
+			}
+		});
+		
+		tableLinks.addListener(SWT.Resize, new Listener()
+	    {
+	        @Override
+	        public void handleEvent(Event arg0)
+	        {
+	            Point size = tableLinks.getSize();
+	            
+	            TableColumn[] columns = tableLinks.getColumns();
+	            columns[0].setWidth((int)(size.x*0.8));
+	            columns[1].setWidth((int)(size.x*0.2));
+	        }
+	    });
+		
+		removeLink.addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				int indexLink = tableLinks.getSelectionIndex();
+				if(indexLink != -1) {
+					Link l = (Link) tableLinks.getItem(indexLink).getData();
+					int indexOfRoom = tableRooms.getSelectionIndex();
+					Room workingRoom = (Room) tableRooms.getItem(indexOfRoom).getData();
+					workingRoom.removeLink(l);
+					tableLinks.remove(indexLink);
+					roomList.add(l.getNextRoom().getId() + " - " + l.getNextRoom().getName());
+				}
 			}
 		});
 	}
