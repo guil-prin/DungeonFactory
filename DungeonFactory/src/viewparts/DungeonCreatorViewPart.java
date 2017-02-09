@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -98,6 +99,9 @@ public class DungeonCreatorViewPart {
             item.setData(r);
             item.setText(r.getName());
         }
+        
+        removeRoom = new Button(compositeLeft, SWT.BORDER);
+        removeRoom.setText("Supprimer la salle");
         
         compositeLeft.pack();
 	}
@@ -347,6 +351,33 @@ public class DungeonCreatorViewPart {
 					workingRoom.removeLink(l);
 					tableLinks.remove(indexLink);
 					roomList.add(l.getNextRoom().getId() + " - " + l.getNextRoom().getName());
+				}
+			}
+		});
+		
+		removeRoom.addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				boolean error = false;
+				int indexOfRoom = tableRooms.getSelectionIndex();
+				Room checkRoom = (Room) tableRooms.getItem(indexOfRoom).getData();
+				if(indexOfRoom != -1) {
+					for(Room r : dungeon.getRooms()) {
+						List<Link> links = r.getLinks();
+						for(Link l : links) {
+							if(l.getNextRoom().getId().equals(checkRoom.getId())) {
+								error = true;
+							}
+						}
+					}
+					if(error) {
+						MessageDialog.openWarning(parent.getShell(), "Erreur", "Des salles sont liées à celle-ci. Veuillez retirer les liens vers cette salle.");
+					}
+					else {
+						tableRooms.remove(indexOfRoom);
+						dungeon.removeRoom(checkRoom);
+					}
 				}
 			}
 		});

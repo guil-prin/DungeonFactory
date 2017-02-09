@@ -70,6 +70,10 @@ public class Dungeon {
 		rooms.add(r);
 	}
 	
+	public void removeRoom(Room r) {
+		rooms.remove(r);
+	}
+	
 	public Integer sizeOfRooms() {
 		return rooms.size();
 	}
