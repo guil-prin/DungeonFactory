@@ -70,7 +70,6 @@ public class Persona {
 		int size = this.sizeOfDeck();
 		while(found == false && i < size) {
 			Card check = deck.get(i);
-			System.out.println("Check it !");
 			if((check.getTag()).equals(c.getTag())) {
 				found = true;
 			}
