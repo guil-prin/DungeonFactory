@@ -225,7 +225,7 @@ public class DungeonCreatorViewPart {
 				checkFinal.setEnabled(true);
 				folder.setEnabled(true);
 				
-				this.fillTheLinks();
+				this.fillTheLinks(r);
 			}
 			
 			@Override
@@ -233,14 +233,12 @@ public class DungeonCreatorViewPart {
 				
 			}
 			
-			private void fillTheLinks() {
+			private void fillTheLinks(Room r) {
 				tableLinks.removeAll();
 				roomList.removeAll();
-				int indexOfRoom = tableRooms.getSelectionIndex();
-				Room selectedRoom = (Room) tableRooms.getItem(indexOfRoom).getData();
 				List<Room> dRooms = new ArrayList<>();
-				dRooms.add(selectedRoom);
-				List<Link> links = selectedRoom.getLinks();
+				dRooms.add(r);
+				List<Link> links = r.getLinks();
 				for(Link l : links) {
 					TableItem item = new TableItem(tableLinks, SWT.NONE);
 					item.setData(l);
@@ -248,9 +246,9 @@ public class DungeonCreatorViewPart {
 					item.setText(1, String.valueOf(l.isAccessible()));
 					dRooms.add(l.getNextRoom());
 				}
-				for(Room r : dungeon.getRooms()) {
-					if(!dRooms.contains(r))
-						roomList.add(r.getId() + " - " + r.getName());
+				for(Room allRooms : dungeon.getRooms()) {
+					if(!dRooms.contains(allRooms))
+						roomList.add(allRooms.getId() + " - " + allRooms.getName());
 				}
 			}
 		});

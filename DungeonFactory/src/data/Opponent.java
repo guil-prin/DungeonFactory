@@ -1,17 +1,20 @@
 package data;
 
-public class Creature {
+public class Opponent {
 
 	private String name;
 	private Integer hp;
+	private Integer str;
 	
-	public Creature() {
+	public Opponent() {
 		
 	}
-	
-	public Creature(String name, Integer hp) {
+
+	public Opponent(String name, Integer hp, Integer str) {
+		super();
 		this.name = name;
 		this.hp = hp;
+		this.str = str;
 	}
 
 	public String getName() {
@@ -29,6 +32,16 @@ public class Creature {
 	public void setHp(Integer hp) {
 		this.hp = hp;
 	}
+
+	public Integer getStr() {
+		return str;
+	}
+
+	public void setStr(Integer str) {
+		this.str = str;
+	}
+	
+	
 	
 	
 }
