@@ -7,7 +7,10 @@ public class Opponent {
 	private Integer str;
 	
 	public Opponent() {
-		
+		super();
+		this.name = "";
+		this.hp = 0;
+		this.str = 0;
 	}
 
 	public Opponent(String name, Integer hp, Integer str) {

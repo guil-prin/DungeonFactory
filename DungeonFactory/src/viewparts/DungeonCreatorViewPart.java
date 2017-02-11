@@ -25,13 +25,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
+import data.Card;
 import data.Dungeon;
 import data.Link;
+import data.Persona;
 import data.Room;
 
 public class DungeonCreatorViewPart {
@@ -43,12 +46,13 @@ public class DungeonCreatorViewPart {
 	
 	private Composite compositeLeft, compositeRight;
 	private GridData leftData, rightData;
-	private Button newRoomButton, checkFinal, linkButton, checkAccessible, removeRoom, removeLink;
-	private Table tableRooms, tableLinks;
-	private Text roomName, roomDesc;
+	private Button newRoomButton, checkFinal, linkButton, checkAccessible, removeRoom, removeLink, checkOpponent, addCardAction;
+	private Table tableRooms, tableLinks, tableCardsEvent;
+	private Text roomName, roomDesc, initDescEvent, finalDescEvent, actionCard, nameOpponent;
 	private CTabFolder folder;
 	private CTabItem eventTab, linkTab;
-	private Combo roomList;
+	private Combo roomList, cardList;
+	private Spinner hpOpponent, strengthOpponent;
 	
 	@Inject
 	public DungeonCreatorViewPart() {
@@ -154,7 +158,79 @@ public class DungeonCreatorViewPart {
 	}
 	
 	private void manageEvents() {
+		Composite c = new Composite(folder, SWT.NONE);
+		c.setLayout(new GridLayout(3, false));
+		GridData dataEvent = new GridData(SWT.FILL, SWT.NONE, true, false);
+		dataEvent.horizontalSpan = 2;
+		Label initDescLabel = new Label(c, SWT.NONE);
+		initDescLabel.setText("Evenement initial : ");
+		initDescEvent = new Text(c, SWT.BORDER);
+		initDescEvent.setLayoutData(dataEvent);
+		Label checkOpponentLabel = new Label(c, SWT.NONE);
+		checkOpponentLabel.setText("Nécessite une validation ? ");
+		checkOpponent = new Button(c, SWT.CHECK);
+		checkOpponent.setLayoutData(dataEvent);
+		Label finalDescLabel = new Label(c, SWT.NONE);
+		finalDescLabel.setText("Evenement validé : ");
+		finalDescEvent = new Text(c, SWT.BORDER);
+		finalDescEvent.setLayoutData(dataEvent);
+		finalDescEvent.setEnabled(false);
+		Label separator = new Label(c, SWT.HORIZONTAL | SWT.SEPARATOR);
+        GridData gdSeparator = new GridData(GridData.FILL_HORIZONTAL);
+        gdSeparator.horizontalSpan = 3;
+        separator.setLayoutData(gdSeparator);
+        
+        Label labelOpponent = new Label(c, SWT.NONE);
+        labelOpponent.setText("Elément perturbateur : ");
+        nameOpponent = new Text(c, SWT.BORDER);
+        nameOpponent.setLayoutData(dataEvent);
+        nameOpponent.setEnabled(false);
+        Label labelHP = new Label(c, SWT.NONE);
+        labelHP.setText("HP : ");
+        hpOpponent = new Spinner(c, SWT.BORDER | SWT.SEARCH);
+        hpOpponent.setEnabled(false);
+        hpOpponent.setLayoutData(dataEvent);
+        Label labelStr = new Label(c, SWT.NONE);
+        labelStr.setText("Force : ");
+        strengthOpponent = new Spinner(c, SWT.BORDER | SWT.SEARCH);
+        strengthOpponent.setEnabled(false);
+        strengthOpponent.setLayoutData(dataEvent);
+        
+        separator = new Label(c, SWT.HORIZONTAL | SWT.SEPARATOR);
+        separator.setLayoutData(gdSeparator);
+        Label cardLabel = new Label(c, SWT.NONE);
+        cardLabel.setText("Carte");
+        Label actionLabel = new Label(c, SWT.NONE);
+        actionLabel.setText("Conséquence de l'action");
+        Label addLabel = new Label(c, SWT.NONE);
+        addLabel.setText("Ajouter");
+		cardList = new Combo(c, SWT.READ_ONLY);
+		cardList.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
+		cardList.setEnabled(false);
+		actionCard = new Text(c, SWT.BORDER);
+		actionCard.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
+		actionCard.setEnabled(false);
+		addCardAction = new Button(c, SWT.BORDER);
+		addCardAction.setText("+");
+		addCardAction.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
 		
+		String[] titles = { "Carte", "Conséquence de l'action" };
+		tableCardsEvent = new Table(c, SWT.BORDER | SWT.V_SCROLL);
+		tableCardsEvent.setLinesVisible(true);
+		tableCardsEvent.setHeaderVisible(true);
+		for (int loopIndex = 0; loopIndex < titles.length; loopIndex++) {
+            TableColumn column = new TableColumn(tableCardsEvent, SWT.NULL);
+            column.setText(titles[loopIndex]);
+        }
+        for (int loopIndex = 0; loopIndex < titles.length; loopIndex++) {
+        	tableCardsEvent.getColumn(loopIndex).pack();
+        }
+        GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+        gd.horizontalSpan = 3;
+        tableCardsEvent.setLayoutData(gd);
+        tableCardsEvent.setEnabled(false);
+		
+        eventTab.setControl(c);
 	}
 	
 	private void manageLinks() {
@@ -224,13 +300,32 @@ public class DungeonCreatorViewPart {
 				roomDesc.setEnabled(true);
 				checkFinal.setEnabled(true);
 				folder.setEnabled(true);
-				
+				this.fillTheEvent(r);
 				this.fillTheLinks(r);
 			}
 			
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				
+			}
+			
+			private void fillTheEvent(Room r) {
+				tableCardsEvent.removeAll();
+				initDescEvent.setText(r.getEvent().getInitialDescription());
+				boolean haveAnOpponent = r.getEvent().isValidated();
+				checkOpponent.setSelection(haveAnOpponent);
+				finalDescEvent.setEnabled(haveAnOpponent);
+		        nameOpponent.setEnabled(haveAnOpponent);
+		        hpOpponent.setEnabled(haveAnOpponent);
+		        strengthOpponent.setEnabled(haveAnOpponent);
+				cardList.setEnabled(haveAnOpponent);
+				actionCard.setEnabled(haveAnOpponent);
+		        tableCardsEvent.setEnabled(haveAnOpponent);
+				finalDescEvent.setText(r.getEvent().getFinalDescription());
+				nameOpponent.setText(r.getEvent().getOpponent().getName());
+		        hpOpponent.setSelection(r.getEvent().getOpponent().getHp());
+		        strengthOpponent.setSelection(r.getEvent().getOpponent().getStr());
+		        this.fillTheCards();
 			}
 			
 			private void fillTheLinks(Room r) {
@@ -249,6 +344,22 @@ public class DungeonCreatorViewPart {
 				for(Room allRooms : dungeon.getRooms()) {
 					if(!dRooms.contains(allRooms))
 						roomList.add(allRooms.getId() + " - " + allRooms.getName());
+				}
+			}
+			
+			private void fillTheCards() {
+				cardList.removeAll();
+				List<Card> allCards = new ArrayList<>();
+				for(Persona p : dungeon.getPersonas()) {
+					for(Card c : p.getDeck()) {
+						if(!allCards.contains(c)) {
+							allCards.add(c);
+						}
+					}
+				}
+				for(Card c : allCards) {
+					cardList.add(c.getName() + " - Force : " + c.getPower());
+					cardList.setData(c.getName() + " - Force : " + c.getPower(), c);
 				}
 			}
 		});
@@ -377,6 +488,139 @@ public class DungeonCreatorViewPart {
 						dungeon.removeRoom(checkRoom);
 					}
 				}
+			}
+		});
+		
+		checkOpponent.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				boolean haveAnOpponent = ((Button) e.getSource()).getSelection();
+				finalDescEvent.setEnabled(haveAnOpponent);
+		        nameOpponent.setEnabled(haveAnOpponent);
+		        hpOpponent.setEnabled(haveAnOpponent);
+		        strengthOpponent.setEnabled(haveAnOpponent);
+				cardList.setEnabled(haveAnOpponent);
+				actionCard.setEnabled(haveAnOpponent);
+		        tableCardsEvent.setEnabled(haveAnOpponent);
+				int indexOfRoom = tableRooms.getSelectionIndex();
+				Room r = (Room) tableRooms.getItem(indexOfRoom).getData();
+				r.getEvent().setValidated(haveAnOpponent);
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		initDescEvent.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				int indexOfRoom = tableRooms.getSelectionIndex();
+				Room r = (Room) tableRooms.getItem(indexOfRoom).getData();
+				r.getEvent().setInitialDescription(initDescEvent.getText());
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		finalDescEvent.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				int indexOfRoom = tableRooms.getSelectionIndex();
+				Room r = (Room) tableRooms.getItem(indexOfRoom).getData();
+				r.getEvent().setFinalDescription(finalDescEvent.getText());
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		nameOpponent.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				int indexOfRoom = tableRooms.getSelectionIndex();
+				Room r = (Room) tableRooms.getItem(indexOfRoom).getData();
+				r.getEvent().getOpponent().setName(nameOpponent.getText());;
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+        hpOpponent.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				int indexOfRoom = tableRooms.getSelectionIndex();
+				Room r = (Room) tableRooms.getItem(indexOfRoom).getData();
+				r.getEvent().getOpponent().setHp(Integer.parseInt(hpOpponent.getText()));;
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+        
+        strengthOpponent.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				int indexOfRoom = tableRooms.getSelectionIndex();
+				Room r = (Room) tableRooms.getItem(indexOfRoom).getData();
+				r.getEvent().getOpponent().setStr(Integer.parseInt(strengthOpponent.getText()));;
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+        
+        tableCardsEvent.addListener(SWT.Resize, new Listener()
+	    {
+	        @Override
+	        public void handleEvent(Event arg0)
+	        {
+	            Point size = tableCardsEvent.getSize();
+	            
+	            TableColumn[] columns = tableCardsEvent.getColumns();
+	            columns[0].setWidth((int)(size.x*0.3));
+	            columns[1].setWidth((int)(size.x*0.7));
+	        }
+	    });
+        
+        addCardAction.addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				int roomId = roomList.getSelectionIndex();
+				int indexOfCard = cardList.getSelectionIndex();
+				String action = actionCard.getText();
+				Card c = (Card) cardList.getData(cardList.getItem(indexOfCard));
+				TableItem item = new TableItem(tableCardsEvent, SWT.NONE);
+				item.setData(c);
+				item.setText(0, c.getName() + " - Force : " + c.getPower()); 
+				item.setText(1, action);
+				dungeon.getRoomById(roomId).getEvent().addAction(c, action);
 			}
 		});
 	}

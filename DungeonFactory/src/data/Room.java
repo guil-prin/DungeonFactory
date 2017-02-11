@@ -11,9 +11,11 @@ public class Room {
 	private boolean start;
 	private boolean finish;
 	private List<Link> links;
+	private Event event;
 	
 	public Room() {
-		
+		links = new ArrayList<>();
+		event = new Event();
 	}
 
 	public Room(Integer id, String name, String description, boolean start, boolean finish) {
@@ -24,6 +26,7 @@ public class Room {
 		this.start = start;
 		this.finish = finish;
 		links = new ArrayList<>();
+		event = new Event();
 	}
 	
 	public Room(Integer id, String name, String description, boolean finish) {
@@ -34,6 +37,7 @@ public class Room {
 		this.start = false;
 		this.finish = finish;
 		links = new ArrayList<>();
+		event = new Event();
 	}
 
 	public Integer getId() {
@@ -90,6 +94,14 @@ public class Room {
 	
 	public void removeLink(Link l) {
 		links.remove(l);
+	}
+
+	public Event getEvent() {
+		return event;
+	}
+
+	public void setEvent(Event event) {
+		this.event = event;
 	}
 	
 }

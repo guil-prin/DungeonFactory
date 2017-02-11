@@ -11,7 +11,11 @@ public class Event {
 	private HashMap<Card, String> actions;
 	
 	public Event() {
-		
+		this.initialDescription = "";
+		this.finalDescription = "";
+		this.isValidated = false;
+		this.opponent = new Opponent();
+		this.actions = new HashMap<>();
 	}
 
 	public Event(String initialDescription, String finalDescription, boolean isValidated, Opponent opponent,
@@ -64,6 +68,9 @@ public class Event {
 		this.actions = actions;
 	}
 	
+	public void addAction(Card c, String s) {
+		actions.put(c, s);
+	}
 	
 	
 }
