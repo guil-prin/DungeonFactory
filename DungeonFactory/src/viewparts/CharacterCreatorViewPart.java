@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Text;
 import data.Card;
 import data.Dungeon;
 import data.Persona;
+import model.ModelProvider;
 
 public class CharacterCreatorViewPart {
 	
@@ -52,7 +53,7 @@ public class CharacterCreatorViewPart {
 	@PostConstruct
 	public void postConstruct(Composite parent) {
 		this.parent = parent; 
-		dungeon = Dungeon.getInstance();
+		dungeon = ModelProvider.INSTANCE.getDungeon(); //Dungeon.getInstance();
 		buildUI();
 		
 	}

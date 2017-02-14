@@ -4,7 +4,10 @@ package viewparts;
 import javax.inject.Inject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
@@ -36,6 +39,7 @@ import data.Dungeon;
 import data.Link;
 import data.Persona;
 import data.Room;
+import model.ModelProvider;
 
 public class DungeonCreatorViewPart {
 	
@@ -62,7 +66,7 @@ public class DungeonCreatorViewPart {
 	@PostConstruct
 	public void postConstruct(Composite parent) {
 		this.parent = parent;
-		dungeon = Dungeon.getInstance();
+		dungeon = ModelProvider.INSTANCE.getDungeon(); //Dungeon.getInstance();
 		this.id = dungeon.sizeOfRooms();
 		buildUI();
 	}
@@ -326,6 +330,15 @@ public class DungeonCreatorViewPart {
 		        hpOpponent.setSelection(r.getEvent().getOpponent().getHp());
 		        strengthOpponent.setSelection(r.getEvent().getOpponent().getStr());
 		        this.fillTheCards();
+		        Iterator<Entry<Card, String>> it = r.getEvent().getActions().entrySet().iterator();
+		        while (it.hasNext()) {
+		            Map.Entry<Card, String> pair = (Map.Entry<Card, String>)it.next();
+		            TableItem item = new TableItem(tableCardsEvent, SWT.NONE);
+		            item.setData((Card) pair.getKey());
+		            item.setText(0, ((Card)pair.getKey()).getName());
+		            item.setText(1, (String) pair.getValue()); 
+		            //it.remove(); // avoids a ConcurrentModificationException
+		        }
 			}
 			
 			private void fillTheLinks(Room r) {
@@ -612,7 +625,7 @@ public class DungeonCreatorViewPart {
 			
 			@Override
 			public void handleEvent(Event event) {
-				int roomId = roomList.getSelectionIndex();
+				int roomId = tableRooms.getSelectionIndex();
 				int indexOfCard = cardList.getSelectionIndex();
 				String action = actionCard.getText();
 				Card c = (Card) cardList.getData(cardList.getItem(indexOfCard));

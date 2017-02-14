@@ -12,7 +12,7 @@ public class Dungeon {
 	private Dungeon() {
 		personas = new ArrayList<>();
 		rooms = new ArrayList<>();
-		rooms.add(new Room(0, "Entrée", "My first room", true, false));
+		//rooms.add(new Room(0, "Entrée", "My first room", true, false));
 	}
 	
 	public static final Dungeon getInstance() {

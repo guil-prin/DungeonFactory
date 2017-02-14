@@ -5,6 +5,7 @@
       <children xsi:type="basic:PartStack" xmi:id="_edztsOepEea4mZq35Neglg" elementId="dungeonfactory.partstack.0">
         <children xsi:type="basic:Part" xmi:id="_DCJfQOeoEea4mZq35Neglg" elementId="dungeonfactory.part.crateurdepersonnage" contributionURI="bundleclass://DungeonFactory/viewparts.CharacterCreatorViewPart" label="Createur de personnage"/>
         <children xsi:type="basic:Part" xmi:id="_S5-TkOeoEea4mZq35Neglg" elementId="dungeonfactory.part.createurdedonjon" contributionURI="bundleclass://DungeonFactory/viewparts.DungeonCreatorViewPart" label="Createur de donjon"/>
+        <children xsi:type="basic:Part" xmi:id="_Fh5xMPCmEeadBvLdTEFjzA" elementId="dungeonfactory.part.lancerlejeu" contributionURI="bundleclass://DungeonFactory/viewparts.GameViewPart" label="Lancer le jeu"/>
       </children>
     </children>
     <mainMenu xmi:id="_IxpeUOccEeaRnOl7rkmK3g" elementId="dungeonfactory.menu.0"/>
