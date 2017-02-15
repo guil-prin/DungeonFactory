@@ -310,7 +310,6 @@ public class Game {
 			this.refreshCurrentEventData();
 		}
 		else {
-			System.out.println("Riposte ennemie !");
 			currentPersona.setHp(currentPersona.getHp() - o.getStr());
 			this.refreshCurrentPersonaData();
 		}
