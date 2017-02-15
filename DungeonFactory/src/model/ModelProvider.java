@@ -27,7 +27,7 @@ public enum ModelProvider {
 		}
 		dungeon.addPersona(p);
 		
-		Room r0 = new Room(0, "Entrée", "Une salle d'entrée", false);
+		Room r0 = new Room(0, "Entrée", "Une salle d'entrée. Les murs sont en pierres qui semblent tomber les unes après les autres au fil des âges.", false);
 		r0.setStart(true);
 		Room r1 = new Room(1, "Couloir piégé", "Un couloir piégé par des ronces", false);
 		Room r2 = new Room(2, "Sortie", "La sortie de ce donjon très court", true);
@@ -36,11 +36,11 @@ public enum ModelProvider {
 		r1.addLink(new Link(r2, false));
 		Event e0 = new Event();
 		e0.setInitialDescription("L'entrée de ce donjon s'enfonce dans les ténèbres. Rien n'est cependant à signaler.");
-		e0.setValidated(false);
+		e0.setNeedsValidation(false);
 		r0.setEvent(e0);
 		Event e1 = new Event();
 		e1.setInitialDescription("Un grand couloir sombre. Un mur de ronces vous bloque la route vers la sortie.");
-		e1.setValidated(true);
+		e1.setNeedsValidation(true);
 		e1.setFinalDescription("Vous avez détruit avec brio le mur de ronces et rien ne vous empêche de passer.");
 		e1.setOpponent(new Opponent("Mur de ronces", 1, 0));
 		e1.addAction(c1, "Vous détruisez ces ronces !");

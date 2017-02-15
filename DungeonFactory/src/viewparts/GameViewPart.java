@@ -27,13 +27,10 @@ public class GameViewPart {
 			
 			@Override
 			public void handleEvent(Event event) {
-				
+				parent.getShell().dispose();
 				new Game(Display.getCurrent());
 			}
 		});
 	}
-	
-	
-	
 	
 }

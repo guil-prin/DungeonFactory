@@ -44,7 +44,4 @@ public class Opponent {
 		this.str = str;
 	}
 	
-	
-	
-	
 }

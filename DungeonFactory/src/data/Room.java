@@ -104,4 +104,13 @@ public class Room {
 		this.event = event;
 	}
 	
+	public boolean isRoomOpen() {
+		boolean isOpen = true;
+		for(Link l : links) {
+			if(!l.isAccessible()) {
+				isOpen = false;
+			}
+		}
+		return isOpen;
+	}
 }

@@ -6,14 +6,14 @@ public class Event {
 	
 	private String initialDescription;
 	private String finalDescription;
-	private boolean isValidated;
+	private boolean needsValidation;
 	private Opponent opponent;
 	private HashMap<Card, String> actions;
 	
 	public Event() {
 		this.initialDescription = "";
 		this.finalDescription = "";
-		this.isValidated = false;
+		this.needsValidation = false;
 		this.opponent = new Opponent();
 		this.actions = new HashMap<>();
 	}
@@ -23,7 +23,7 @@ public class Event {
 		super();
 		this.initialDescription = initialDescription;
 		this.finalDescription = finalDescription;
-		this.isValidated = isValidated;
+		this.needsValidation = isValidated;
 		this.opponent = opponent;
 		this.actions = actions;
 	}
@@ -44,12 +44,12 @@ public class Event {
 		this.finalDescription = finalDescription;
 	}
 
-	public boolean isValidated() {
-		return isValidated;
+	public boolean isNeedsValidation() {
+		return needsValidation;
 	}
 
-	public void setValidated(boolean isValidated) {
-		this.isValidated = isValidated;
+	public void setNeedsValidation(boolean isValidated) {
+		this.needsValidation = isValidated;
 	}
 
 	public Opponent getOpponent() {

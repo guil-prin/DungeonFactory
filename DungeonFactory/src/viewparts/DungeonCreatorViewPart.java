@@ -316,7 +316,7 @@ public class DungeonCreatorViewPart {
 			private void fillTheEvent(Room r) {
 				tableCardsEvent.removeAll();
 				initDescEvent.setText(r.getEvent().getInitialDescription());
-				boolean haveAnOpponent = r.getEvent().isValidated();
+				boolean haveAnOpponent = r.getEvent().isNeedsValidation();
 				checkOpponent.setSelection(haveAnOpponent);
 				finalDescEvent.setEnabled(haveAnOpponent);
 		        nameOpponent.setEnabled(haveAnOpponent);
@@ -518,7 +518,7 @@ public class DungeonCreatorViewPart {
 		        tableCardsEvent.setEnabled(haveAnOpponent);
 				int indexOfRoom = tableRooms.getSelectionIndex();
 				Room r = (Room) tableRooms.getItem(indexOfRoom).getData();
-				r.getEvent().setValidated(haveAnOpponent);
+				r.getEvent().setNeedsValidation(haveAnOpponent);
 			}
 			
 			@Override
