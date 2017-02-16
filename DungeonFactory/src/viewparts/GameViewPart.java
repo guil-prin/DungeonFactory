@@ -4,6 +4,9 @@ package viewparts;
 import javax.inject.Inject;
 import javax.annotation.PostConstruct;
 
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.MUIElement;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -14,6 +17,12 @@ import org.eclipse.swt.widgets.Listener;
 import game.Game;
 
 public class GameViewPart {
+	
+	@Inject
+	EModelService modelService;
+	@Inject
+	MApplication app;
+	
 	@Inject
 	public GameViewPart() {
 		
@@ -28,7 +37,12 @@ public class GameViewPart {
 			@Override
 			public void handleEvent(Event event) {
 				parent.getShell().dispose();
-				new Game(Display.getCurrent());
+				
+				MUIElement window = modelService.find("dungeonfactory.trimmedwindow.gamewindow", app);
+
+				window.setToBeRendered(true);
+				
+				//new Game(Display.getCurrent());
 			}
 		});
 	}

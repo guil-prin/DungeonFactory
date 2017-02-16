@@ -10,6 +10,9 @@
     </children>
     <mainMenu xmi:id="_IxpeUOccEeaRnOl7rkmK3g" elementId="dungeonfactory.menu.0"/>
   </children>
+  <children xsi:type="basic:TrimmedWindow" xmi:id="_ofN6UPO0Eea_7uvq5EMd7w" elementId="dungeonfactory.trimmedwindow.gamewindow" toBeRendered="false" label="Dungeon Factory : The Game" width="800" height="600">
+    <children xsi:type="basic:Part" xmi:id="_pM5fsPO0Eea_7uvq5EMd7w" elementId="dungeonfactory.part.game" contributionURI="bundleclass://DungeonFactory/game.GameViewPart" label="Game"/>
+  </children>
   <rootContext xmi:id="_c3AF2cjYEeSyMNYR5xypkQ" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
     <children xmi:id="_c3AF2sjYEeSyMNYR5xypkQ" elementId="org.eclipse.ui.contexts.window" name="In Windows"/>
     <children xmi:id="_c3AF28jYEeSyMNYR5xypkQ" elementId="org.eclipse.ui.contexts.dialog" name="In Dialogs"/>
