@@ -29,6 +29,7 @@
    <vm>
    </vm>
 
+
    <plugins>
       <plugin id="DungeonFactory"/>
       <plugin id="com.ibm.icu"/>
@@ -118,5 +119,12 @@
       <plugin id="org.w3c.dom.svg"/>
    </plugins>
 
+
+   <preferencesInfo>
+      <targetfile overwrite="false"/>
+   </preferencesInfo>
+
+   <cssInfo>
+   </cssInfo>
 
 </product>

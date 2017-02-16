@@ -3,14 +3,22 @@ package game;
 
 import javax.inject.Inject;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.jface.dialogs.PopupDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -28,6 +36,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import data.Card;
 import data.Dungeon;
@@ -166,12 +176,16 @@ public class GameViewPart {
 	}
 	
 	private void setImage() {
-		InputStream is = getClass().getClassLoader().getResourceAsStream("img/crypt.jpg");
-		Point size = picRoom.getSize();
-		ImageData imageData = new ImageData(is);
+		Label label = new Label(picRoom, SWT.NONE);
+		Bundle bundle = FrameworkUtil.getBundle(getClass());
+		String path = "/img/img.jpg"; // ADD IMG IN BUILD.PROPERTIES
+		URL url = FileLocator.find(bundle, new Path(path), null);
+		ImageDescriptor imageDesc = ImageDescriptor.createFromURL(url);
+		Image image = imageDesc.createImage();
 		
-		//Image image = new Image(Display.getCurrent(), imageData);
-		//picRoom.setBackgroundImage(image);
+		label.setImage(image);
+		
+		
 	}
 		
 	private void buildBotUI() {
