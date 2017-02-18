@@ -419,6 +419,8 @@ public class GameViewPart {
 					}
 					else {
 						fightInfos[0].setText("Impossible de réaliser cette action.");
+						fightInfos[1].setText("");
+						fightInfos[2].setText("");
 					}
 				}
 				
