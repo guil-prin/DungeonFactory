@@ -483,22 +483,27 @@ public class DungeonCreatorViewPart {
 			public void handleEvent(Event event) {
 				boolean error = false;
 				int indexOfRoom = tableRooms.getSelectionIndex();
-				Room checkRoom = (Room) tableRooms.getItem(indexOfRoom).getData();
 				if(indexOfRoom != -1) {
-					for(Room r : dungeon.getRooms()) {
-						List<Link> links = r.getLinks();
-						for(Link l : links) {
-							if(l.getNextRoom().getId().equals(checkRoom.getId())) {
-								error = true;
+					Room checkRoom = (Room) tableRooms.getItem(indexOfRoom).getData();
+					if(!checkRoom.isStart()) {
+						for(Room r : dungeon.getRooms()) {
+							List<Link> links = r.getLinks();
+							for(Link l : links) {
+								if(l.getNextRoom().getId().equals(checkRoom.getId())) {
+									error = true;
+								}
 							}
 						}
-					}
-					if(error) {
-						MessageDialog.openWarning(parent.getShell(), "Erreur", "Des salles sont liées à celle-ci. Veuillez retirer les liens vers cette salle.");
+						if(error) {
+							MessageDialog.openWarning(parent.getShell(), "Erreur", "Des salles sont liées à celle-ci. Veuillez retirer les liens vers cette salle.");
+						}
+						else {
+							tableRooms.remove(indexOfRoom);
+							dungeon.removeRoom(checkRoom);
+						}
 					}
 					else {
-						tableRooms.remove(indexOfRoom);
-						dungeon.removeRoom(checkRoom);
+						MessageDialog.openWarning(parent.getShell(), "Erreur", "Impossible de supprimer la première salle.");
 					}
 				}
 			}

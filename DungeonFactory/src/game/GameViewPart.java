@@ -3,9 +3,6 @@ package game;
 
 import javax.inject.Inject;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,8 +12,6 @@ import javax.annotation.PostConstruct;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.URIUtil;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
@@ -24,16 +19,13 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.osgi.framework.Bundle;
@@ -48,7 +40,6 @@ import data.Room;
 
 public class GameViewPart {
 	
-	private Display display;
 	private Dungeon dungeon;
 	private Persona currentPersona;
 	private List<Card> currentDeck;
@@ -71,7 +62,6 @@ public class GameViewPart {
 	@PostConstruct
 	public void postConstruct(Composite parent) {
 		this.parent = parent;
-		this.display = parent.getDisplay();
 		this.dungeon = Dungeon.getInstance();
 		this.currentPersona = dungeon.getPersonas().get(0);
 		this.currentRoom = dungeon.getRoomById(0);
