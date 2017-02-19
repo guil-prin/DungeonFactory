@@ -65,6 +65,7 @@ public class CharacterCreatorViewPart {
 		parent.setLayout(new GridLayout(2, false));
 		this.createLeftColumn();
 		this.createRightColumn();
+		this.switchStates(false);
 		
 		this.addListeners();
 	}
@@ -85,7 +86,7 @@ public class CharacterCreatorViewPart {
         GridData gd = new GridData(GridData.FILL_HORIZONTAL);
         namePersonaField = new Text(compositeLeft, SWT.BORDER | SWT.SINGLE);
         namePersonaField.setLayoutData(gd);
-        addPersonaButton = new Button(compositeLeft, SWT.BORDER);
+        addPersonaButton = new Button(compositeLeft, SWT.NONE);
         addPersonaButton.setText("+");
         // End of block New Character
         
@@ -97,7 +98,6 @@ public class CharacterCreatorViewPart {
         
         deleteCharacter = new Button(compositeLeft, SWT.NONE);
         deleteCharacter.setText("Supprimer");
-        deleteCharacter.setEnabled(false);
         
         for (Persona p : dungeon.getPersonas()) {
             TableItem item = new TableItem(tablePersonas, SWT.NULL);
@@ -125,13 +125,11 @@ public class CharacterCreatorViewPart {
         gd.horizontalSpan = 3;
         textName = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
         textName.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-        textName.setEnabled(false);
         textName.setLayoutData(gd);
         Label labelHP = new Label(compositeRight, SWT.NONE);
         labelHP.setText("HP : ");
         textHP = new Spinner(compositeRight, SWT.BORDER | SWT.SEARCH);
         textHP.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-        textHP.setEnabled(false);
         // End of character edit block
         
         Label separator = new Label(compositeRight, SWT.HORIZONTAL | SWT.SEPARATOR);
@@ -154,22 +152,16 @@ public class CharacterCreatorViewPart {
         labelAdd.setText("Ajouter");
         
         textCardName = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
-        textCardName.setEnabled(false);
         textCardTag = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
-        textCardTag.setEnabled(false);
         textCardDesc = new Text(compositeRight, SWT.BORDER);
         textCardDesc.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
-        textCardDesc.setEnabled(false);
         textCardPower = new Spinner(compositeRight, SWT.BORDER | SWT.SEARCH);
-        textCardPower.setEnabled(false);
         textCardQty = new Spinner(compositeRight, SWT.BORDER | SWT.SEARCH);
-        textCardQty.setEnabled(false);
         textCardQty.setMinimum(1);
         addCard = new Button(compositeRight, SWT.NONE);
         GridData buttonGd = new GridData(GridData.FILL_HORIZONTAL);
         addCard.setLayoutData(buttonGd);
         addCard.setText("+");
-        addCard.setEnabled(false);
         // End of card edit block
         
         // Card display block
@@ -208,6 +200,9 @@ public class CharacterCreatorViewPart {
 		textCardPower.setEnabled(editable);
 		textCardQty.setEnabled(editable);
 		addCard.setEnabled(editable);
+		addOneCard.setEnabled(editable);
+		removeOneCard.setEnabled(editable);
+		deleteAllCards.setEnabled(editable);
 	}
 	
 	private void fillWithCards(Persona p) {
