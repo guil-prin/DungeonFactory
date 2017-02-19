@@ -43,7 +43,7 @@ public class CharacterCreatorViewPart {
 	private Table tablePersonas, tableCards;
 	private Text textName, textCardName, textCardTag, textCardDesc, namePersonaField;
 	private Spinner textHP, textCardPower, textCardQty;
-	private Button addPersonaButton, deleteCharacter, addCard;
+	private Button addPersonaButton, deleteCharacter, addCard, addOneCard, removeOneCard, deleteAllCards;
 	
 	@Inject
 	public CharacterCreatorViewPart() {
@@ -187,6 +187,13 @@ public class CharacterCreatorViewPart {
         for (int loopIndex = 0; loopIndex < titles.length; loopIndex++) {
         	tableCards.getColumn(loopIndex).pack();
         }
+        
+        addOneCard = new Button(compositeRight, SWT.NONE);
+        addOneCard.setText("Ajouter 1 carte");
+        removeOneCard = new Button(compositeRight, SWT.NONE);
+        removeOneCard.setText("Retirer 1 carte");
+        deleteAllCards = new Button(compositeRight, SWT.NONE);
+        deleteAllCards.setText("Supprimer la sélection");
         // End of card display block
         
 	}
@@ -276,9 +283,9 @@ public class CharacterCreatorViewPart {
 			@Override
 			public void handleEvent(Event event) {
 				int indexOfPersona = tablePersonas.getSelectionIndex();
-				Persona personaToDelete = (Persona) tablePersonas.getItem(indexOfPersona).getData();
+				Persona p = getSelectedPersona();
 				tablePersonas.remove(indexOfPersona);
-				dungeon.removePersona(personaToDelete);
+				dungeon.removePersona(p);
 				textName.setText("");
 				textHP.setSelection(0);
 				switchStates(false);
@@ -289,8 +296,7 @@ public class CharacterCreatorViewPart {
 			
 			@Override
 			public void handleEvent(Event event) {
-				int indexOfPersona = tablePersonas.getSelectionIndex();
-				Persona p = (Persona) tablePersonas.getItem(indexOfPersona).getData();
+				Persona p = getSelectedPersona();
 				Card c = new Card(textCardName.getText(), textCardTag.getText(), textCardDesc.getText(), Integer.parseInt(textCardPower.getText()));
 				if(!p.isThisCardInDeck(c)) {
 					for(int i = 0 ; i < Integer.parseInt(textCardQty.getText()) ; i++) {
@@ -334,7 +340,7 @@ public class CharacterCreatorViewPart {
 			public void focusLost(FocusEvent e) {
 				String name = textName.getText();
 				int indexOfPersona = tablePersonas.getSelectionIndex();
-				Persona p = (Persona) tablePersonas.getItem(indexOfPersona).getData();
+				Persona p = getSelectedPersona();
 				if(!dungeon.isPersonaExists(p, name)) {
 					tablePersonas.getItem(indexOfPersona).setText(name);
 					p.setName(name);
@@ -356,8 +362,7 @@ public class CharacterCreatorViewPart {
 			@Override
 			public void focusLost(FocusEvent e) {
 				Integer hp = Integer.parseInt(textHP.getText());
-				int indexOfPersona = tablePersonas.getSelectionIndex();
-				Persona p = (Persona) tablePersonas.getItem(indexOfPersona).getData();
+				Persona p = getSelectedPersona();
 				p.setHp(hp);
 			}
 			
@@ -365,6 +370,70 @@ public class CharacterCreatorViewPart {
 			public void focusGained(FocusEvent e) {
 			}
 		});
+    	
+    	addOneCard.addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				Integer indexOfCard = tableCards.getSelectionIndex();
+				if(indexOfCard != -1) {
+					Persona p = getSelectedPersona();
+					TableItem item = tableCards.getItem(indexOfCard);
+					Card c = (Card) item.getData();
+					p.addCardInDeck(c);
+					item.setText(4, String.valueOf(Integer.parseInt(item.getText(4))+1));
+				}
+			}
+		});
+    	
+    	removeOneCard.addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				Integer indexOfCard = tableCards.getSelectionIndex();
+				if(indexOfCard != -1) {
+					Persona p = getSelectedPersona();
+					TableItem item = tableCards.getItem(indexOfCard);
+					Integer numberOfCards = Integer.parseInt(item.getText(4));
+					Card c = (Card) item.getData();
+					if(numberOfCards > 1) {
+						item.setText(4, String.valueOf(Integer.parseInt(item.getText(4))-1));
+					}
+					else {
+						tableCards.remove(indexOfCard);
+					}
+					p.removeCardInDeck(c);
+				}
+			}
+		});
+    	
+    	deleteAllCards.addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				Integer indexOfCard = tableCards.getSelectionIndex();
+				if(indexOfCard != -1) {
+					Persona p = getSelectedPersona();
+					TableItem item = tableCards.getItem(indexOfCard);
+					Integer numberOfCards = Integer.parseInt(item.getText(4));
+					Card c = (Card) item.getData();
+					tableCards.remove(indexOfCard);
+					for(int i = 0 ; i < numberOfCards ; i++) {
+						p.removeCardInDeck(c);
+					}
+					System.out.println(p.sizeOfDeck());
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Methods for listeners : redundant calls.
+	 */
+	private Persona getSelectedPersona() {
+		int indexOfPersona = tablePersonas.getSelectionIndex();
+		Persona p = (Persona) tablePersonas.getItem(indexOfPersona).getData();
+		return p;
 	}
 	
 }
