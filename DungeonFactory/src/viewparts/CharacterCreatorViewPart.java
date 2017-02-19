@@ -421,7 +421,6 @@ public class CharacterCreatorViewPart {
 					for(int i = 0 ; i < numberOfCards ; i++) {
 						p.removeCardInDeck(c);
 					}
-					System.out.println(p.sizeOfDeck());
 				}
 			}
 		});
