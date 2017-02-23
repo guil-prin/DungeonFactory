@@ -56,7 +56,7 @@ public class GameViewPart {
 	private Composite[] cards;
 	private GridData midLeftData, midRightData, midCenterData, topData, midData, botData;
 	private Table nextRooms;
-	private Label descChar, roomName, roomDesc, eventInfo, picLabel;
+	private Label descChar, roomName, roomDesc, eventInfo, picLabel; 
 	private Label[] cardNames, fightInfos;
 	
 	@Inject
