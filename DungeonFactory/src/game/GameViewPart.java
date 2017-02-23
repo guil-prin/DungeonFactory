@@ -18,13 +18,16 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -53,7 +56,7 @@ public class GameViewPart {
 	private Composite[] cards;
 	private GridData midLeftData, midRightData, midCenterData, topData, midData, botData;
 	private Table nextRooms;
-	private Label descChar, roomName, roomDesc, eventInfo;
+	private Label descChar, roomName, roomDesc, eventInfo, picLabel;
 	private Label[] cardNames, fightInfos;
 	
 	@Inject
@@ -82,7 +85,7 @@ public class GameViewPart {
 	}
 	
 	private void buildInitUI() {
-		initComposite = new Composite(mainComposite, SWT.BORDER);
+		initComposite = new Composite(mainComposite, SWT.NONE);
 		GridData initData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		initComposite.setLayoutData(initData);
 		GridLayout gl = new GridLayout(3, false);
@@ -105,7 +108,9 @@ public class GameViewPart {
 			@Override
 			public void handleEvent(Event event) {
 				currentPersona = dungeon.getPersonaByName(charCombo.getText());
-				initComposite.setVisible(false);
+				initData.exclude = !initData.exclude;
+				initComposite.setVisible(!initData.exclude);
+				initComposite = null;
 				
 				buildUI();
 			}
@@ -117,7 +122,7 @@ public class GameViewPart {
 	private void buildUI() {
 
 		this.setDeck();
-		//this.buildInitUI();
+		
 		this.buildTopUI();
 		this.buildMidUI();
 		this.buildBotUI();
@@ -126,6 +131,8 @@ public class GameViewPart {
 		
 		this.addListeners();
 		parent.getShell().layout(true, true);
+		
+		//this.setImage();
 	}
 	
 	private void buildTopUI() {
@@ -180,7 +187,7 @@ public class GameViewPart {
 		picRoom = new Composite(centerRoom, SWT.BORDER);
 		picRoom.setLayoutData(midCenterData);
 		picRoom.setLayout(picLayout);
-		this.setImage();
+		picLabel = new Label(picRoom, SWT.NONE);
 		
 		fightRoom = new Composite(centerRoom, SWT.BORDER);
 		fightRoom.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -205,22 +212,36 @@ public class GameViewPart {
 		
 	}
 	
+	/*
 	private void setImage() {
-		Label label = new Label(picRoom, SWT.NONE);
+		Point size = picRoom.getSize();
 		Bundle bundle = FrameworkUtil.getBundle(getClass());
 		String path = "/img/img.jpg"; // ADD IMG IN BUILD.PROPERTIES
 		URL url = FileLocator.find(bundle, new Path(path), null);
 		ImageDescriptor imageDesc = ImageDescriptor.createFromURL(url);
 		Image image = imageDesc.createImage();
+		Image resized = this.resize(image, size.x, size.y);
 		
-		label.setImage(image);
-		
-		
-	}
+		picRoom.setBackgroundImage(resized);
+	}*/
+	
+	/*
+	private Image resize(Image image, int width, int height) {
+		  Image scaled = new Image(parent.getDisplay(), width, height);
+		  GC gc = new GC(scaled);
+		  gc.setAntialias(SWT.ON);
+		  gc.setInterpolation(SWT.HIGH);
+		  gc.drawImage(image, 0, 0,image.getBounds().width, image.getBounds().height, 0, 0, width, height);
+		  gc.dispose();
+		  image.dispose(); // don't forget about me!
+		  return scaled;
+	}*/
 		
 	private void buildBotUI() {
+		Point size = parent.getSize();
 		botComposite = new Composite(mainComposite, SWT.BORDER);
 		botData = new GridData(SWT.FILL, SWT.NONE, true, false);
+		botData.heightHint = (int) (size.y * 0.2);
 		botComposite.setLayoutData(botData);
 		GridLayout gl = new GridLayout(5, false);
 		botComposite.setLayout(gl);
@@ -400,11 +421,11 @@ public class GameViewPart {
 	        }
 	    });
 		
-		mainComposite.addListener(SWT.Resize, new Listener() {
+		parent.addListener(SWT.Resize, new Listener() {
 			
 			@Override
 			public void handleEvent(Event event) {
-				Point size = mainComposite.getSize();
+				Point size = parent.getSize();
 				
 				botData.heightHint = (int) (size.y * 0.2);
 			}
@@ -463,6 +484,25 @@ public class GameViewPart {
 			});
 		}
 		
+		/*
+		picRoom.addListener(SWT.Resize, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				Point size = picRoom.getSize();
+				Image image = picRoom.getBackgroundImage();
+				if(image == null) {
+					Bundle bundle = FrameworkUtil.getBundle(getClass());
+					String path = "/img/img.jpg"; // ADD IMG IN BUILD.PROPERTIES
+					URL url = FileLocator.find(bundle, new Path(path), null);
+					ImageDescriptor imageDesc = ImageDescriptor.createFromURL(url);
+					image = imageDesc.createImage();
+				}
+				Image resized = resize(image, size.x, size.y);
+				picLabel.setImage(resized);
+			}
+		});
+		*/
 	}
 	
 	
