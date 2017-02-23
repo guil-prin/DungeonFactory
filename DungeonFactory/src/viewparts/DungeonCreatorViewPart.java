@@ -12,11 +12,14 @@ import java.util.Map.Entry;
 import javax.annotation.PostConstruct;
 
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
@@ -97,7 +100,7 @@ public class DungeonCreatorViewPart {
         // End of button new room
         
         GridData gd_table = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
-        tableRooms = new Table(compositeLeft, SWT.BORDER | SWT.V_SCROLL);
+        tableRooms = new Table(compositeLeft, SWT.BORDER | SWT.V_SCROLL | SWT.FULL_SELECTION);
         tableRooms.setLayoutData(gd_table);
         tableRooms.setLinesVisible(false);
         tableRooms.setHeaderVisible(false);
@@ -377,6 +380,50 @@ public class DungeonCreatorViewPart {
 			}
 		});
 		
+		tableRooms.addMouseTrackListener(new MouseTrackListener() {
+			
+			PopupDialog popup;
+			
+			@Override
+			public void mouseHover(MouseEvent e) {
+				
+			}
+			
+			@Override
+			public void mouseExit(MouseEvent e) {
+				if(popup != null) {
+					popup.close();
+				}
+			}
+			
+			@Override
+			public void mouseEnter(MouseEvent e) {
+				Point pt = new Point(e.x, e.y);
+				TableItem item = tableRooms.getItem(pt);
+				Room currentRoom = null;
+				if(item != null) {
+					currentRoom = (Room) item.getData();
+					popup = new PopupDialog(((Composite) e.getSource()).getShell(), SWT.BORDER, false, false, false, false, false, "Entrées et sorties de la salle " + currentRoom.getName(), getRoomEntrancesAndExits(currentRoom));
+					popup.create();
+					popup.open();
+				}
+			}
+			
+			private String getRoomEntrancesAndExits(Room currentRoom) {
+				String formattedString = "Entrées par : \n";
+				List<Room> entrances = dungeon.getEntrancesOfRoom(currentRoom);
+				for(Room r : entrances) {
+					formattedString += r.getName() + "\n";
+				}
+				List<Room> exits = dungeon.getExitsOfRoom(currentRoom);
+				formattedString += "Sorties par : \n";
+				for(Room r : exits) {
+					formattedString += r.getName() + "\n";
+				}
+				return formattedString;
+			}
+		});
+		
 		roomName.addFocusListener(new FocusListener() {
 			
 			@Override
@@ -417,6 +464,10 @@ public class DungeonCreatorViewPart {
 				int indexOfRoom = tableRooms.getSelectionIndex();
 				Room r = (Room) tableRooms.getItem(indexOfRoom).getData();
 				r.setFinish(!r.isFinish());	
+				if(r.isFinish()) {
+					tableLinks.removeAll();
+					r.getLinks().clear();
+				}
 			}
 			
 			@Override

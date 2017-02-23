@@ -70,7 +70,7 @@ public class Persona {
 		int size = this.sizeOfDeck();
 		while(found == false && i < size) {
 			Card check = deck.get(i);
-			if((check.getTag()).equals(c.getTag())) {
+			if((check.getName()).equals(c.getName()) && check.getPower() == c.getPower()) {
 				found = true;
 			}
 			i++;

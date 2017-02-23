@@ -8,27 +8,34 @@ import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-public class GameViewPart {
+public class GameLauncherViewPart {
 	
 	@Inject
 	EModelService modelService;
 	@Inject
 	MApplication app;
 	
+	public static final String LAUNCHGAME = "CONSTRUIRE VOTRE JEU";
+	
 	@Inject
-	public GameViewPart() {
+	public GameLauncherViewPart() {
 		
 	}
 	
 	@PostConstruct
 	public void postConstruct(Composite parent) {
-		Button b = new Button(parent, SWT.BORDER);	
-		b.setText("Lancer le jeu");
+		Button b = new Button(parent, SWT.WRAP);	
+		b.setText(LAUNCHGAME);
+		FontData[] fd = b.getFont().getFontData();
+		fd[0].setHeight(72);
+		b.setFont(new Font(parent.getDisplay(), fd[0]));
 		b.addListener(SWT.Selection, new Listener() {
 			
 			@Override

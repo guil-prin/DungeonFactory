@@ -86,4 +86,28 @@ public class Dungeon {
 		return null;
 	}
 	
+	public List<Room> getEntrancesOfRoom(Room r) {
+		List<Room> rooms = new ArrayList<>();
+		if(!r.isStart()) {
+			for(Room room : dungeon.getRooms()) {
+				for(Link link : room.getLinks()) {
+					if(link.getNextRoom().equals(r)) {
+						rooms.add(room);
+					}
+				}
+			}
+		}
+		return rooms;
+	}
+	
+	public List<Room> getExitsOfRoom(Room r) {
+		List<Room> rooms = new ArrayList<>();
+		if(!r.isFinish()) {
+			for(Link link : r.getLinks()) {
+				rooms.add(link.getNextRoom());
+			}
+		}
+		return rooms;
+	}
+	
 }

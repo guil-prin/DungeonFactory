@@ -127,6 +127,9 @@ public class GameViewPart {
 		GridLayout descGridLayout = new GridLayout();
 		descCurrentRoom.setLayout(descGridLayout);
 		
+		Label topRoomDesc = new Label(descCurrentRoom, SWT.NONE);
+		topRoomDesc.setText("Votre salle :");
+		
 		roomDesc = new Label(descCurrentRoom, SWT.WRAP);
 		roomDesc.setLayoutData(textData);
 		
@@ -156,13 +159,11 @@ public class GameViewPart {
 		GridLayout stateLayout = new GridLayout();
 		stateEvent.setLayout(stateLayout);
 		
-		this.fillEventComposite(stateEvent, textData);
-		
-	}
-	
-	private void fillEventComposite(Composite c, GridData textData) {
+		Label topEventDesc = new Label(stateEvent, SWT.NONE);
+		topEventDesc.setText("Event en cours :");
 		eventInfo = new Label(stateEvent, SWT.WRAP);
 		eventInfo.setLayoutData(textData);
+		
 	}
 	
 	private void setImage() {
@@ -218,6 +219,7 @@ public class GameViewPart {
 	private void makeVisualCard(Composite c, int indexOfCard) {
 		c.setData("index", indexOfCard);
 		c.setData("card", currentDeck.get(indexOfCard));
+		
 		cardNames[indexOfCard].setText(currentDeck.get(indexOfCard).getName());
 	}
 	

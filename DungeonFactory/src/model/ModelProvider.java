@@ -17,15 +17,15 @@ public enum ModelProvider {
 		dungeon = Dungeon.getInstance();
 		Persona p = new Persona("Élias de Kelliwic'h");
 		p.setHp(30);
-		Card c1 = new Card("Boule de feu", "b1", "Une boule de feu de force 2", 2);
+		Card c1 = new Card("Boule de feu", "Une boule de feu de force 2", 2);
 		for(int i = 0 ; i < 5 ; i++) {
 			p.addCardInDeck(c1);
 		}
-		Card c2 = new Card("Vague de froid", "f1", "Une vague de froid destructrice de force 3", 3);
+		Card c2 = new Card("Vague de froid", "Une vague de froid destructrice de force 3", 3);
 		for(int i = 0 ; i < 3 ; i++) {
 			p.addCardInDeck(c2);
 		}
-		Card c3 = new Card("Eboulement", "e1", "Une apparition de gros rochers au dessus de la cible", 7);
+		Card c3 = new Card("Eboulement", "Une apparition de gros rochers au dessus de la cible", 7);
 		p.addCardInDeck(c3);
 		dungeon.addPersona(p);
 		
