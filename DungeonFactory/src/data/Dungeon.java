@@ -62,6 +62,15 @@ public class Dungeon {
 		return found;
 	}
 	
+	public Persona getPersonaByName(String name) {
+		for(Persona p : personas) {
+			if(p.getName().equals(name)) {
+				return p;
+			}
+		}
+		return null;
+	}
+	
 	public List<Room> getRooms() {
 		return rooms;
 	}

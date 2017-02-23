@@ -22,6 +22,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -46,7 +48,7 @@ public class GameViewPart {
 	private Room currentRoom;
 	List<Integer> picks;
 	
-	private Composite 	parent, mainComposite, topComposite, midComposite, botComposite, descCurrentRoom, picRoom,
+	private Composite 	parent, mainComposite, initComposite, topComposite, midComposite, botComposite, descCurrentRoom, picRoom,
 						stateEvent, centerRoom, fightRoom;
 	private Composite[] cards;
 	private GridData midLeftData, midRightData, midCenterData, topData, midData, botData;
@@ -63,30 +65,69 @@ public class GameViewPart {
 	public void postConstruct(Composite parent) {
 		this.parent = parent;
 		this.dungeon = Dungeon.getInstance();
-		this.currentPersona = dungeon.getPersonas().get(0);
+		//this.currentPersona = dungeon.getPersonas().get(0);
 		this.currentRoom = dungeon.getRoomById(0);
 		this.currentDeck = new ArrayList<>();
 		this.picks = new ArrayList<>();
-		this.setDeck();
 		
-		this.buildUI();
-		
-		
-	}
-	
-	private void buildUI() {
+
 		mainComposite = new Composite(parent, SWT.BORDER);
 		GridData mainData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		mainComposite.setLayoutData(mainData);
 		GridLayout gl = new GridLayout();
 		mainComposite.setLayout(gl);
+		
+		this.buildInitUI();
+		
+		
+	}
+	
+	private void buildUI() {
+
+		this.setDeck();
+		//this.buildInitUI();
 		this.buildTopUI();
 		this.buildMidUI();
 		this.buildBotUI();
-		
+
 		this.initializeValues();
 		
 		this.addListeners();
+		parent.getShell().setSize(800, 600);
+		parent.getShell().layout(true, true);
+	}
+	
+	private void buildInitUI() {
+		initComposite = new Composite(mainComposite, SWT.BORDER);
+		GridData initData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		initComposite.setLayoutData(initData);
+		GridLayout gl = new GridLayout(3, false);
+		initComposite.setLayout(gl);
+		
+		Label chooseChar = new Label(initComposite, SWT.NONE);
+		chooseChar.setText("Choisir son personnage : ");
+		
+		Combo charCombo = new Combo(initComposite, SWT.READ_ONLY);
+		charCombo.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 1, 1));
+		for(Persona p : dungeon.getPersonas()) {
+			charCombo.add(p.getName());
+		}
+		
+		Button b = new Button(initComposite, SWT.NONE);
+		b.setText("Choisir ce personnage");
+		
+		b.addListener(SWT.Selection, new Listener() {
+			
+			@Override
+			public void handleEvent(Event event) {
+				currentPersona = dungeon.getPersonaByName(charCombo.getText());
+				initComposite.setVisible(false);
+				
+				buildUI();
+			}
+		});
+		
+		initComposite.pack();
 	}
 	
 	private void buildTopUI() {
