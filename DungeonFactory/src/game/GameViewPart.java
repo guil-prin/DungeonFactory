@@ -78,23 +78,7 @@ public class GameViewPart {
 		mainComposite.setLayout(gl);
 		
 		this.buildInitUI();
-		
-		
-	}
-	
-	private void buildUI() {
-
-		this.setDeck();
-		//this.buildInitUI();
-		this.buildTopUI();
-		this.buildMidUI();
-		this.buildBotUI();
-
-		this.initializeValues();
-		
-		this.addListeners();
-		parent.getShell().setSize(800, 600);
-		parent.getShell().layout(true, true);
+			
 	}
 	
 	private void buildInitUI() {
@@ -128,6 +112,20 @@ public class GameViewPart {
 		});
 		
 		initComposite.pack();
+	}
+	
+	private void buildUI() {
+
+		this.setDeck();
+		//this.buildInitUI();
+		this.buildTopUI();
+		this.buildMidUI();
+		this.buildBotUI();
+
+		this.initializeValues();
+		
+		this.addListeners();
+		parent.getShell().layout(true, true);
 	}
 	
 	private void buildTopUI() {
