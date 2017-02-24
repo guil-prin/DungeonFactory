@@ -198,6 +198,7 @@ public class GameViewPart {
 		descCurrentRoom.setLayout(descGridLayout);
 		
 		Label topRoomDesc = new Label(descCurrentRoom, SWT.NONE);
+		topRoomDesc.setLayoutData(new GridData(SWT.CENTER, SWT.NONE, true, false));
 		topRoomDesc.setText(YOURROOM);
 		
 		roomDesc = new Label(descCurrentRoom, SWT.WRAP);
@@ -221,11 +222,12 @@ public class GameViewPart {
 		fightInfos[1] = new Label(fightRoom, SWT.WRAP);
 		fightInfos[2] = new Label(fightRoom, SWT.WRAP);
 		fightInfos[3] = new Label(fightRoom, SWT.WRAP);
-		fightInfos[0].setLayoutData(textData);
+		fightInfos[0].setLayoutData(new GridData(SWT.CENTER, SWT.NONE, true, false));
 		fightInfos[1].setLayoutData(textData);
 		fightInfos[2].setLayoutData(textData);
 		fightInfos[3].setLayoutData(textData);
 		fightInfos[0].setText(FIGHTINFO);
+		
 		
 		stateEvent = new Composite(midComposite, SWT.BORDER);
 		stateEvent.setLayoutData(midRightData);
@@ -233,6 +235,7 @@ public class GameViewPart {
 		stateEvent.setLayout(stateLayout);
 		
 		Label topEventDesc = new Label(stateEvent, SWT.NONE);
+		topEventDesc.setLayoutData(new GridData(SWT.CENTER, SWT.NONE, true, false));
 		topEventDesc.setText(YOUREVENT);
 		eventInfo = new Label(stateEvent, SWT.WRAP);
 		eventInfo.setLayoutData(textData);

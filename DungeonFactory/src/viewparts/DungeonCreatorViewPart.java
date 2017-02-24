@@ -61,6 +61,29 @@ public class DungeonCreatorViewPart {
 	private Combo roomList, cardList;
 	private Spinner hpOpponent, strengthOpponent;
 	
+	private static final String NEWROOM = "Nouvelle salle";
+	private static final String DELETEROOM = "Supprimer la salle";
+	private static final String ROOMNAME = "Nom";
+	private static final String ROOMDESC = "Description";
+	private static final String INITEVENT = "Evenement initial";
+	private static final String NEEDSVALIDATION = "Nécessite une validation ?";
+	private static final String VALIDEVENT = "Evènement validé";
+	private static final String OPPONENT = "Elément perturbateur";
+	private static final String HP = "Points de vie";
+	private static final String STRENGTH = "Force";
+	private static final String CARD = "Carte";
+	private static final String CONSEQUENCES = "Conséquence de l'action";
+	private static final String ADDWORD = "Ajouter";
+	private static final String ADD = "+";
+	private static final String NATIVEACCESS = "Salle accessibe nativement ?";
+	private static final String LINK = "Lier à cette salle";
+	private static final String ROOM = "Salle";
+	private static final String ACCESS = "Accessible";
+	private static final String REMOVELINK = "Retirer le lien";
+	private static final String ISFINALROOM = "Salle finale ?";
+	private static final String ANEWROOM = "A new room";
+	private static final String BLANKSPACE = " ";
+	
 	@Inject
 	public DungeonCreatorViewPart() {
 		
@@ -95,7 +118,7 @@ public class DungeonCreatorViewPart {
         compositeLeft.setLayout(gl);
         GridData gd = new GridData(GridData.FILL_HORIZONTAL);
         newRoomButton = new Button(compositeLeft, SWT.BORDER);
-        newRoomButton.setText("Nouvelle salle");
+        newRoomButton.setText(NEWROOM);
         newRoomButton.setLayoutData(gd);
         // End of button new room
         
@@ -112,7 +135,7 @@ public class DungeonCreatorViewPart {
         }
         
         removeRoom = new Button(compositeLeft, SWT.BORDER);
-        removeRoom.setText("Supprimer la salle");
+        removeRoom.setText(DELETEROOM);
         
         compositeLeft.pack();
 	}
@@ -129,20 +152,20 @@ public class DungeonCreatorViewPart {
         GridLayout gl = new GridLayout(2, false);
         compositeRight.setLayout(gl);
         Label labelName = new Label(compositeRight, SWT.NONE);
-        labelName.setText("Nom : ");
+        labelName.setText(ROOMNAME);
         GridData gd = new GridData(GridData.FILL_HORIZONTAL);
         roomName = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
         roomName.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
         roomName.setEnabled(false);
         roomName.setLayoutData(gd);
         Label labelDesc = new Label(compositeRight, SWT.NONE);
-        labelDesc.setText("Description : ");
+        labelDesc.setText(ROOMDESC);
         roomDesc = new Text(compositeRight, SWT.BORDER | SWT.SEARCH);
         roomDesc.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
         roomDesc.setEnabled(false);
         roomDesc.setLayoutData(gd);
         Label labelFinish = new Label(compositeRight, SWT.NONE);
-        labelFinish.setText("Salle finale ?");
+        labelFinish.setText(ISFINALROOM);
         checkFinal = new Button(compositeRight, SWT.CHECK);
         checkFinal.setLayoutData(gd);
         checkFinal.setEnabled(false);
@@ -170,15 +193,15 @@ public class DungeonCreatorViewPart {
 		GridData dataEvent = new GridData(SWT.FILL, SWT.NONE, true, false);
 		dataEvent.horizontalSpan = 2;
 		Label initDescLabel = new Label(c, SWT.NONE);
-		initDescLabel.setText("Evenement initial : ");
+		initDescLabel.setText(INITEVENT);
 		initDescEvent = new Text(c, SWT.BORDER);
 		initDescEvent.setLayoutData(dataEvent);
 		Label checkOpponentLabel = new Label(c, SWT.NONE);
-		checkOpponentLabel.setText("Nécessite une validation ? ");
+		checkOpponentLabel.setText(NEEDSVALIDATION);
 		checkOpponent = new Button(c, SWT.CHECK);
 		checkOpponent.setLayoutData(dataEvent);
 		Label finalDescLabel = new Label(c, SWT.NONE);
-		finalDescLabel.setText("Evenement validé : ");
+		finalDescLabel.setText(VALIDEVENT);
 		finalDescEvent = new Text(c, SWT.BORDER);
 		finalDescEvent.setLayoutData(dataEvent);
 		finalDescEvent.setEnabled(false);
@@ -188,17 +211,17 @@ public class DungeonCreatorViewPart {
         separator.setLayoutData(gdSeparator);
         
         Label labelOpponent = new Label(c, SWT.NONE);
-        labelOpponent.setText("Elément perturbateur : ");
+        labelOpponent.setText(OPPONENT);
         nameOpponent = new Text(c, SWT.BORDER);
         nameOpponent.setLayoutData(dataEvent);
         nameOpponent.setEnabled(false);
         Label labelHP = new Label(c, SWT.NONE);
-        labelHP.setText("HP : ");
+        labelHP.setText(HP);
         hpOpponent = new Spinner(c, SWT.BORDER | SWT.SEARCH);
         hpOpponent.setEnabled(false);
         hpOpponent.setLayoutData(dataEvent);
         Label labelStr = new Label(c, SWT.NONE);
-        labelStr.setText("Force : ");
+        labelStr.setText(STRENGTH);
         strengthOpponent = new Spinner(c, SWT.BORDER | SWT.SEARCH);
         strengthOpponent.setEnabled(false);
         strengthOpponent.setLayoutData(dataEvent);
@@ -206,11 +229,11 @@ public class DungeonCreatorViewPart {
         separator = new Label(c, SWT.HORIZONTAL | SWT.SEPARATOR);
         separator.setLayoutData(gdSeparator);
         Label cardLabel = new Label(c, SWT.NONE);
-        cardLabel.setText("Carte");
+        cardLabel.setText(CARD);
         Label actionLabel = new Label(c, SWT.NONE);
-        actionLabel.setText("Conséquence de l'action");
+        actionLabel.setText(CONSEQUENCES);
         Label addLabel = new Label(c, SWT.NONE);
-        addLabel.setText("Ajouter");
+        addLabel.setText(ADDWORD);
 		cardList = new Combo(c, SWT.READ_ONLY);
 		cardList.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
 		cardList.setEnabled(false);
@@ -218,10 +241,10 @@ public class DungeonCreatorViewPart {
 		actionCard.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
 		actionCard.setEnabled(false);
 		addCardAction = new Button(c, SWT.BORDER);
-		addCardAction.setText("+");
+		addCardAction.setText(ADD);
 		addCardAction.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
 		
-		String[] titles = { "Carte", "Conséquence de l'action" };
+		String[] titles = { CARD, CONSEQUENCES };
 		tableCardsEvent = new Table(c, SWT.BORDER | SWT.V_SCROLL);
 		tableCardsEvent.setLinesVisible(true);
 		tableCardsEvent.setHeaderVisible(true);
@@ -246,11 +269,11 @@ public class DungeonCreatorViewPart {
 		roomList = new Combo(c, SWT.READ_ONLY);
 		roomList.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
 		checkAccessible = new Button(c, SWT.CHECK);
-		checkAccessible.setText("Salle accessible nativement ?");
+		checkAccessible.setText(NATIVEACCESS);
 		linkButton = new Button(c, SWT.BORDER);
-		linkButton.setText("Lier à cette salle");
+		linkButton.setText(LINK);
 		linkButton.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
-		String[] titles = { "Salle", "Accessible" };
+		String[] titles = { ROOM, ACCESS };
         tableLinks = new Table(c, SWT.BORDER | SWT.V_SCROLL);
         tableLinks.setLinesVisible(true);
         tableLinks.setHeaderVisible(true);
@@ -265,7 +288,7 @@ public class DungeonCreatorViewPart {
         gd.horizontalSpan = 3;
         tableLinks.setLayoutData(gd);
         removeLink = new Button(c, SWT.BORDER);
-        removeLink.setText("Retirer le lien");
+        removeLink.setText(REMOVELINK);
         linkTab.setControl(c);
 	}
 	
@@ -286,7 +309,7 @@ public class DungeonCreatorViewPart {
 			
 			@Override
 			public void handleEvent(Event event) {
-				Room r = new Room(id, "Room " + id, "A new room", false);
+				Room r = new Room(id, ROOM + BLANKSPACE + id, ANEWROOM, false);
 				dungeon.addRoom(r);
 				TableItem item = new TableItem(tableRooms, SWT.NONE);
 				item.setData(r);
@@ -332,16 +355,17 @@ public class DungeonCreatorViewPart {
 				nameOpponent.setText(r.getEvent().getOpponent().getName());
 		        hpOpponent.setSelection(r.getEvent().getOpponent().getHp());
 		        strengthOpponent.setSelection(r.getEvent().getOpponent().getStr());
-		        this.fillTheCards();
 		        Iterator<Entry<Card, String>> it = r.getEvent().getActions().entrySet().iterator();
 		        while (it.hasNext()) {
 		            Map.Entry<Card, String> pair = (Map.Entry<Card, String>)it.next();
 		            TableItem item = new TableItem(tableCardsEvent, SWT.NONE);
-		            item.setData((Card) pair.getKey());
-		            item.setText(0, ((Card)pair.getKey()).getName());
+		            Card c = (Card)pair.getKey();
+		            item.setData(c);
+		            item.setText(0, c.getName() + " - Force : " + c.getPower());
 		            item.setText(1, (String) pair.getValue()); 
 		            //it.remove(); // avoids a ConcurrentModificationException
 		        }
+		        this.fillTheCards();
 			}
 			
 			private void fillTheLinks(Room r) {
@@ -365,6 +389,11 @@ public class DungeonCreatorViewPart {
 			
 			private void fillTheCards() {
 				cardList.removeAll();
+				List<Card> dCards = new ArrayList<>();
+				TableItem[] items = tableCardsEvent.getItems();
+				for(TableItem item : items) {
+					dCards.add((Card) item.getData());
+				}
 				List<Card> allCards = new ArrayList<>();
 				for(Persona p : dungeon.getPersonas()) {
 					for(Card c : p.getDeck()) {
@@ -374,8 +403,10 @@ public class DungeonCreatorViewPart {
 					}
 				}
 				for(Card c : allCards) {
-					cardList.add(c.getName() + " - Force : " + c.getPower());
-					cardList.setData(c.getName() + " - Force : " + c.getPower(), c);
+					if(!dCards.contains(c)) {
+						cardList.add(c.getName() + " - Force : " + c.getPower());
+						cardList.setData(c.getName() + " - Force : " + c.getPower(), c);
+					}
 				}
 			}
 		});
