@@ -12,6 +12,9 @@ import javax.annotation.PostConstruct;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.MUIElement;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
@@ -31,6 +34,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.osgi.framework.Bundle;
@@ -51,6 +55,7 @@ public class GameViewPart {
 	private Room currentRoom;
 	List<Integer> picks;
 	
+	private Shell shell;
 	private Composite 	parent, mainComposite, initComposite, topComposite, midComposite, botComposite, descCurrentRoom, picRoom,
 						stateEvent, centerRoom, fightRoom;
 	private Composite[] cards;
@@ -58,6 +63,22 @@ public class GameViewPart {
 	private Table nextRooms;
 	private Label descChar, roomName, roomDesc, eventInfo, picLabel; 
 	private Label[] cardNames, fightInfos;
+	
+	private static final String PICKCHAR = "Choisir son personnage : ";
+	private static final String CHARPICKED = "Choisir ce personnage";
+	private static final String YOURCHAR = "Votre personnage : ";
+	private static final String SEPARATOR = " - ";
+	private static final String HP = " points de vie";
+	private static final String CURRENTROOM = "Vous êtes dans la salle : ";
+	private static final String YOURROOM = "VOTRE SALLE";
+	private static final String YOUREVENT = "EVENEMENT EN COURS";
+	private static final String FIGHTINFO = "INFORMATIONS DE COMBAT";
+	private static final String NEXTROOMS = "DEPLACEMENT VERS";
+	private static final String YOURDECK = "VOTRE MAIN";
+	private static final String FORBIDDENACTION = "Impossible de réaliser cette action.";
+	private static final String EMPTY = "";
+	
+	
 	
 	@Inject
 	public GameViewPart() {
@@ -67,6 +88,7 @@ public class GameViewPart {
 	@PostConstruct
 	public void postConstruct(Composite parent) {
 		this.parent = parent;
+		this.shell = parent.getShell();
 		this.dungeon = Dungeon.getInstance();
 		//this.currentPersona = dungeon.getPersonas().get(0);
 		this.currentRoom = dungeon.getRoomById(0);
@@ -81,7 +103,7 @@ public class GameViewPart {
 		mainComposite.setLayout(gl);
 		
 		this.buildInitUI();
-			
+		
 	}
 	
 	private void buildInitUI() {
@@ -92,7 +114,7 @@ public class GameViewPart {
 		initComposite.setLayout(gl);
 		
 		Label chooseChar = new Label(initComposite, SWT.NONE);
-		chooseChar.setText("Choisir son personnage : ");
+		chooseChar.setText(PICKCHAR);
 		
 		Combo charCombo = new Combo(initComposite, SWT.READ_ONLY);
 		charCombo.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 1, 1));
@@ -101,18 +123,20 @@ public class GameViewPart {
 		}
 		
 		Button b = new Button(initComposite, SWT.NONE);
-		b.setText("Choisir ce personnage");
+		b.setText(CHARPICKED);
 		
 		b.addListener(SWT.Selection, new Listener() {
 			
 			@Override
 			public void handleEvent(Event event) {
-				currentPersona = dungeon.getPersonaByName(charCombo.getText());
-				initData.exclude = !initData.exclude;
-				initComposite.setVisible(!initData.exclude);
-				initComposite = null;
-				
-				buildUI();
+				if(charCombo.getSelectionIndex() != -1) {
+					currentPersona = dungeon.getPersonaByName(charCombo.getText());
+					initData.exclude = !initData.exclude;
+					initComposite.setVisible(!initData.exclude);
+					initComposite = null;
+					
+					buildUI();
+				}
 			}
 		});
 		
@@ -130,7 +154,7 @@ public class GameViewPart {
 		this.initializeValues();
 		
 		this.addListeners();
-		parent.getShell().layout(true, true);
+		shell.layout(true, true);
 		
 		//this.setImage();
 	}
@@ -174,7 +198,7 @@ public class GameViewPart {
 		descCurrentRoom.setLayout(descGridLayout);
 		
 		Label topRoomDesc = new Label(descCurrentRoom, SWT.NONE);
-		topRoomDesc.setText("Votre salle :");
+		topRoomDesc.setText(YOURROOM);
 		
 		roomDesc = new Label(descCurrentRoom, SWT.WRAP);
 		roomDesc.setLayoutData(textData);
@@ -196,9 +220,12 @@ public class GameViewPart {
 		fightInfos[0] = new Label(fightRoom, SWT.WRAP);
 		fightInfos[1] = new Label(fightRoom, SWT.WRAP);
 		fightInfos[2] = new Label(fightRoom, SWT.WRAP);
+		fightInfos[3] = new Label(fightRoom, SWT.WRAP);
 		fightInfos[0].setLayoutData(textData);
 		fightInfos[1].setLayoutData(textData);
 		fightInfos[2].setLayoutData(textData);
+		fightInfos[3].setLayoutData(textData);
+		fightInfos[0].setText(FIGHTINFO);
 		
 		stateEvent = new Composite(midComposite, SWT.BORDER);
 		stateEvent.setLayoutData(midRightData);
@@ -206,7 +233,7 @@ public class GameViewPart {
 		stateEvent.setLayout(stateLayout);
 		
 		Label topEventDesc = new Label(stateEvent, SWT.NONE);
-		topEventDesc.setText("Event en cours :");
+		topEventDesc.setText(YOUREVENT);
 		eventInfo = new Label(stateEvent, SWT.WRAP);
 		eventInfo.setLayoutData(textData);
 		
@@ -290,11 +317,11 @@ public class GameViewPart {
 	}
 	
 	private void refreshCurrentPersonaData() {
-		descChar.setText("Votre personnage : " + currentPersona.getName() + " - " + currentPersona.getHp() + " HP");
+		descChar.setText(YOURCHAR + currentPersona.getName() + SEPARATOR + currentPersona.getHp() + HP);
 	}
 	
 	private void refreshCurrentRoomData() {
-		roomName.setText("Votre salle actuelle : " + currentRoom.getName());
+		roomName.setText(CURRENTROOM + currentRoom.getName());
 		roomDesc.setText(currentRoom.getDescription());
 		this.fillNextRooms();
 	}
@@ -315,8 +342,8 @@ public class GameViewPart {
 	
 	private void refreshFightData(Card c) {
 		String l1 = "Vous utilisez " + c.getName();
-		String l2 = "";
-		String l3 = "";
+		String l2 = EMPTY;
+		String l3 = EMPTY;
 		Opponent o = currentRoom.getEvent().getOpponent();
 		if(currentRoom.getEvent().getActions().containsKey(c)) {
 			if(c.getPower() > 0) {
@@ -340,15 +367,15 @@ public class GameViewPart {
 		else {
 			l3 = "Vous avez détruit ce qui vous barrait la route !";
 		}
-		fightInfos[0].setText(l1);
-		fightInfos[1].setText(l2);
-		fightInfos[2].setText(l3);
+		fightInfos[1].setText(l1);
+		fightInfos[2].setText(l2);
+		fightInfos[3].setText(l3);
 	}
 	
 	private void refreshFightData() {
-		fightInfos[0].setText("");
-		fightInfos[1].setText("");
-		fightInfos[2].setText("");
+		fightInfos[1].setText(EMPTY);
+		fightInfos[2].setText(EMPTY);
+		fightInfos[3].setText(EMPTY);
 	}
 	
 	private void setDeck() {
@@ -470,9 +497,9 @@ public class GameViewPart {
 						replaceCard(index);
 					}
 					else {
-						fightInfos[0].setText("Impossible de réaliser cette action.");
-						fightInfos[1].setText("");
-						fightInfos[2].setText("");
+						fightInfos[1].setText(FORBIDDENACTION);
+						fightInfos[2].setText(EMPTY);
+						fightInfos[3].setText(EMPTY);
 					}
 				}
 				

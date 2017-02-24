@@ -683,13 +683,15 @@ public class DungeonCreatorViewPart {
 			public void handleEvent(Event event) {
 				int roomId = tableRooms.getSelectionIndex();
 				int indexOfCard = cardList.getSelectionIndex();
-				String action = actionCard.getText();
-				Card c = (Card) cardList.getData(cardList.getItem(indexOfCard));
-				TableItem item = new TableItem(tableCardsEvent, SWT.NONE);
-				item.setData(c);
-				item.setText(0, c.getName() + " - Force : " + c.getPower()); 
-				item.setText(1, action);
-				dungeon.getRoomById(roomId).getEvent().addAction(c, action);
+				if(indexOfCard != -1) {
+					String action = actionCard.getText();
+					Card c = (Card) cardList.getData(cardList.getItem(indexOfCard));
+					TableItem item = new TableItem(tableCardsEvent, SWT.NONE);
+					item.setData(c);
+					item.setText(0, c.getName() + " - Force : " + c.getPower()); 
+					item.setText(1, action);
+					dungeon.getRoomById(roomId).getEvent().addAction(c, action);
+				}
 			}
 		});
 	}

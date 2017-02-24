@@ -51,7 +51,7 @@ public class CharacterCreatorViewPart {
 	private static final String NAME_FIELD = "Nom :";
 	private static final String HP_FIELD = "HP :";
 	private static final String YOURCHAR = "VOTRE PERSONNAGE";
-	private static final String ADDNEWCARD = "AJOUTER UNE NOUVELLE CARTE";
+	private static final String ADDNEWCARD = "AJOUTER LES CARTES DU PERSONNAGE";
 	private static final String CARDNAME_FIELD = "Nom de la carte";
 	private static final String CARDDESC_FIELD = "Description de la carte";
 	private static final String CARDSTR_FIELD = "Force";
