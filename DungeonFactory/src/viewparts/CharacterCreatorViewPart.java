@@ -3,11 +3,16 @@ package viewparts;
 
 import javax.inject.Inject;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -20,6 +25,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -28,6 +34,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 import data.Card;
 import data.Dungeon;
@@ -78,10 +86,27 @@ public class CharacterCreatorViewPart {
 	public void postConstruct(Composite parent) {
 		this.parent = parent; 
 		dungeon = ModelProvider.INSTANCE.getDungeon(); //Dungeon.getInstance();
-		parent.getShell().getDisplay().loadFont("/font/BLKCHCRY.TTF");
-		font = new Font(parent.getShell().getDisplay(), "BlackChancery", 12, SWT.NONE);
+		this.loadFont("BLKCHCRY.TTF");
 		buildUI();
 		
+	}
+	
+	private void loadFont(String name) {
+		//if(parent.getShell().getDisplay().loadFont("/font/BLKCHCRY.TTF"))
+		Bundle bundle = FrameworkUtil.getBundle(getClass());
+		String path = "/font/" + name; 
+		URL url = FileLocator.find(bundle, new Path(path), null);		
+		URL fileUrl = null;
+		try {
+			fileUrl = FileLocator.toFileURL(url);
+		}
+		catch (IOException e) {
+		// Will happen if the file cannot be read for some reason
+			e.printStackTrace();
+		}
+		File file = new File(fileUrl.getPath());
+		Display.getCurrent().loadFont(file.toString());
+		font = new Font(parent.getShell().getDisplay(), "BlackChancery", 12, SWT.NONE);
 	}
 	
 	/**
