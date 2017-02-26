@@ -327,8 +327,8 @@ public class GameViewPart {
 			cards[i].setLayout(glc);
 			cardImg[i] = new Label(cards[i], SWT.NONE);
 			cardImg[i].setLayoutData(new GridData(SWT.CENTER, SWT.NONE, true, false));
-			cardNames[i] = new Label(cards[i], SWT.NONE);
-			cardNames[i].setLayoutData(new GridData(SWT.CENTER, SWT.NONE, true, false));
+			cardNames[i] = new Label(cards[i], SWT.WRAP | SWT.CENTER);
+			cardNames[i].setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 			this.makeVisualCard(i);
 		}
 	}
@@ -370,6 +370,10 @@ public class GameViewPart {
 		cardImg[indexOfCard].setData("index", indexOfCard);
 		cardImg[indexOfCard].setData("card", currentDeck.get(indexOfCard));
 		
+		Image img = cardImg[indexOfCard].getImage();
+		if(img != null) {
+			img.dispose();
+		}
 		cardImg[indexOfCard].setImage(this.LoadImage("card_sized.png"));
 		cardNames[indexOfCard].setText(currentDeck.get(indexOfCard).getName() + " - " + currentDeck.get(indexOfCard).getPower());
 		
@@ -549,11 +553,6 @@ public class GameViewPart {
 						Card usedCard = (Card) ((Label) e.getSource()).getData("card");
 						manageEvent(usedCard);
 						replaceCard(index);
-					}
-					else {
-						fightInfos[1].setText(FORBIDDENACTION);
-						fightInfos[2].setText(EMPTY);
-						fightInfos[3].setText(EMPTY);
 					}
 				}
 				

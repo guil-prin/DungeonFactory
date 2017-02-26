@@ -14,6 +14,7 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -44,14 +45,15 @@ public class CharacterCreatorViewPart {
 	private Text textName, textCardName, textCardDesc, namePersonaField;
 	private Spinner textHP, textCardPower, textCardQty;
 	private Button addPersonaButton, deleteCharacter, addCard, addOneCard, removeOneCard, deleteAllCards;
+	private Font font;
 	
 	private static final String NEWCHAR_FIELD = "Nouveau perso :";
 	private static final String ADD = "+";
 	private static final String DELETE = "Supprimer";
 	private static final String NAME_FIELD = "Nom :";
 	private static final String HP_FIELD = "HP :";
-	private static final String YOURCHAR = "VOTRE PERSONNAGE";
-	private static final String ADDNEWCARD = "AJOUTER LES CARTES DU PERSONNAGE";
+	private static final String YOURCHAR = "Votre personnage";
+	private static final String CARDMANAGER = "Gestion des cartes du personnage";
 	private static final String CARDNAME_FIELD = "Nom de la carte";
 	private static final String CARDDESC_FIELD = "Description de la carte";
 	private static final String CARDSTR_FIELD = "Force";
@@ -76,6 +78,8 @@ public class CharacterCreatorViewPart {
 	public void postConstruct(Composite parent) {
 		this.parent = parent; 
 		dungeon = ModelProvider.INSTANCE.getDungeon(); //Dungeon.getInstance();
+		parent.getShell().getDisplay().loadFont("/font/BLKCHCRY.TTF");
+		font = new Font(parent.getShell().getDisplay(), "BlackChancery", 12, SWT.NONE);
 		buildUI();
 		
 	}
@@ -105,6 +109,7 @@ public class CharacterCreatorViewPart {
         // Block New character
         Label namePersonaLabel = new Label(compositeLeft, SWT.NONE);
         namePersonaLabel.setText(NEWCHAR_FIELD);
+        namePersonaLabel.setFont(font);
         GridData gd = new GridData(GridData.FILL_HORIZONTAL);
         namePersonaField = new Text(compositeLeft, SWT.BORDER | SWT.SINGLE);
         namePersonaField.setLayoutData(gd);
@@ -150,6 +155,7 @@ public class CharacterCreatorViewPart {
         gdCharHeader.horizontalSpan = 4;
         charHeader.setLayoutData(gdCharHeader);
         charHeader.setText(YOURCHAR);
+        charHeader.setFont(font);
         
         Label labelName = new Label(charEdit, SWT.NONE);
         labelName.setText(NAME_FIELD);
@@ -174,7 +180,8 @@ public class CharacterCreatorViewPart {
         GridData gdCardHeader = new GridData(SWT.CENTER, SWT.NONE, true, false);
         gdCardHeader.horizontalSpan = 5;
         headerCard.setLayoutData(gdCardHeader);
-        headerCard.setText(ADDNEWCARD);
+        headerCard.setText(CARDMANAGER);
+        headerCard.setFont(font);
         Label labelCardName = new Label(cardEdit, SWT.NONE);
         labelCardName.setText(CARDNAME_FIELD);
         Label labelCarteDesc = new Label(cardEdit, SWT.NONE);
