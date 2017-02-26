@@ -2,8 +2,15 @@
 package viewparts;
 
 import javax.inject.Inject;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
 import javax.annotation.PostConstruct;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
@@ -12,17 +19,25 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 
 public class GameLauncherViewPart {
+	
+	private Font font;
+	private Composite parent;
 	
 	@Inject
 	EModelService modelService;
 	@Inject
 	MApplication app;
 	
-	public static final String LAUNCHGAME = "CONSTRUIRE VOTRE JEU";
+	private static final String LAUNCHGAME = "Construire votre jeu";
+	private static final String FONTNAME = "BLKCHCRY.TTF";
+	
 	
 	@Inject
 	public GameLauncherViewPart() {
@@ -31,10 +46,14 @@ public class GameLauncherViewPart {
 	
 	@PostConstruct
 	public void postConstruct(Composite parent) {
+		this.parent = parent;
+		this.loadFont(FONTNAME);
+		
 		Button b = new Button(parent, SWT.WRAP);	
 		b.setText(LAUNCHGAME);
+		b.setFont(font);
 		FontData[] fd = b.getFont().getFontData();
-		fd[0].setHeight(72);
+		fd[0].setHeight(36);
 		b.setFont(new Font(parent.getDisplay(), fd[0]));
 		b.addListener(SWT.Selection, new Listener() {
 			
@@ -49,6 +68,24 @@ public class GameLauncherViewPart {
 				//new Game(Display.getCurrent());
 			}
 		});
+	}
+	
+	private void loadFont(String name) {
+		//if(parent.getShell().getDisplay().loadFont("/font/BLKCHCRY.TTF"))
+		Bundle bundle = FrameworkUtil.getBundle(getClass());
+		String path = "/font/" + name; 
+		URL url = FileLocator.find(bundle, new Path(path), null);		
+		URL fileUrl = null;
+		try {
+			fileUrl = FileLocator.toFileURL(url);
+		}
+		catch (IOException e) {
+		// Will happen if the file cannot be read for some reason
+			e.printStackTrace();
+		}
+		File file = new File(fileUrl.getPath());
+		Display.getCurrent().loadFont(file.toString());
+		font = new Font(parent.getShell().getDisplay(), "BlackChancery", 12, SWT.NONE);
 	}
 	
 }

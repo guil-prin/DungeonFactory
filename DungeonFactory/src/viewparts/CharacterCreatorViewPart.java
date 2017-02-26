@@ -76,6 +76,7 @@ public class CharacterCreatorViewPart {
 	private static final String CHARALREADYEXISTS = "Ce personnage existe déjà.";
 	private static final String CHARCANCEL = "Retour à son nom précédent.";
 	private static final String CARDALREADYEXISTS = "Cette carte existe déjà pour ce personnage.";
+	private static final String FONTNAME = "BLKCHCRY.TTF";
 	
 	@Inject
 	public CharacterCreatorViewPart() {
@@ -86,7 +87,7 @@ public class CharacterCreatorViewPart {
 	public void postConstruct(Composite parent) {
 		this.parent = parent; 
 		dungeon = ModelProvider.INSTANCE.getDungeon(); //Dungeon.getInstance();
-		this.loadFont("BLKCHCRY.TTF");
+		this.loadFont(FONTNAME);
 		buildUI();
 		
 	}

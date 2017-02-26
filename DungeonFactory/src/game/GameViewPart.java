@@ -3,6 +3,8 @@ package game;
 
 import javax.inject.Inject;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +28,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -70,6 +73,7 @@ public class GameViewPart {
 	private Label descChar, roomName, roomDesc, eventInfo, picLabel; 
 	private Label[] cardNames, cardImg, fightInfos;
 	private Cursor nope, hand;
+	private Font font;
 	
 	private static final String PICKCHAR = "Choisir son personnage : ";
 	private static final String CHARPICKED = "Choisir ce personnage";
@@ -77,13 +81,14 @@ public class GameViewPart {
 	private static final String SEPARATOR = " - ";
 	private static final String HP = " points de vie";
 	private static final String CURRENTROOM = "Vous êtes dans la salle : ";
-	private static final String YOURROOM = "VOTRE SALLE";
-	private static final String YOUREVENT = "EVENEMENT EN COURS";
-	private static final String FIGHTINFO = "INFORMATIONS DE COMBAT";
-	private static final String NEXTROOMS = "DEPLACEMENT VERS";
-	private static final String YOURDECK = "VOTRE MAIN";
+	private static final String YOURROOM = "Votre salle";
+	private static final String YOUREVENT = "Evènement en cours";
+	private static final String FIGHTINFO = "Informations de combat";
+	private static final String NEXTROOMS = "Déplacement vers";
+	private static final String YOURDECK = "Votre main";
 	private static final String FORBIDDENACTION = "Impossible de réaliser cette action.";
 	private static final String EMPTY = "";
+	private static final String FONTNAME = "BLKCHCRY.TTF";
 	
 	
 	
@@ -111,8 +116,28 @@ public class GameViewPart {
 		GridLayout gl = new GridLayout();
 		mainComposite.setLayout(gl);
 		
+		this.loadFont(FONTNAME);
+		
 		this.buildInitUI();
 		
+	}
+	
+	private void loadFont(String name) {
+		//if(parent.getShell().getDisplay().loadFont("/font/BLKCHCRY.TTF"))
+		Bundle bundle = FrameworkUtil.getBundle(getClass());
+		String path = "/font/" + name; 
+		URL url = FileLocator.find(bundle, new Path(path), null);		
+		URL fileUrl = null;
+		try {
+			fileUrl = FileLocator.toFileURL(url);
+		}
+		catch (IOException e) {
+		// Will happen if the file cannot be read for some reason
+			e.printStackTrace();
+		}
+		File file = new File(fileUrl.getPath());
+		Display.getCurrent().loadFont(file.toString());
+		font = new Font(parent.getShell().getDisplay(), "BlackChancery", 12, SWT.NONE);
 	}
 	
 	private void buildInitUI() {
@@ -124,6 +149,7 @@ public class GameViewPart {
 		
 		Label chooseChar = new Label(initComposite, SWT.NONE);
 		chooseChar.setText(PICKCHAR);
+		chooseChar.setFont(font);
 		
 		Combo charCombo = new Combo(initComposite, SWT.READ_ONLY);
 		charCombo.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 1, 1));
@@ -199,7 +225,6 @@ public class GameViewPart {
         midRightData.widthHint = (int) (size.x * 0.25);
 		midCenterData = new GridData(SWT.FILL, SWT.FILL, true, true);
         midCenterData.widthHint = (int) (size.x * 0.5);
-		GridData textData = new GridData(SWT.HORIZONTAL, SWT.TOP, true, false, 1, 1);
 		
 		descCurrentRoom = new Composite(midComposite, SWT.BORDER);
 		descCurrentRoom.setLayoutData(midLeftData);
@@ -209,6 +234,9 @@ public class GameViewPart {
 		Label topRoomDesc = new Label(descCurrentRoom, SWT.NONE);
 		topRoomDesc.setLayoutData(new GridData(SWT.CENTER, SWT.NONE, true, false));
 		topRoomDesc.setText(YOURROOM);
+		topRoomDesc.setFont(font);
+		
+		GridData textData = new GridData(SWT.HORIZONTAL, SWT.TOP, true, false, 1, 1);
 		
 		roomDesc = new Label(descCurrentRoom, SWT.WRAP);
 		roomDesc.setLayoutData(textData);
@@ -236,6 +264,7 @@ public class GameViewPart {
 		fightInfos[2].setLayoutData(textData);
 		fightInfos[3].setLayoutData(textData);
 		fightInfos[0].setText(FIGHTINFO);
+		fightInfos[0].setFont(font);
 		
 		
 		stateEvent = new Composite(midComposite, SWT.BORDER);
@@ -246,26 +275,12 @@ public class GameViewPart {
 		Label topEventDesc = new Label(stateEvent, SWT.NONE);
 		topEventDesc.setLayoutData(new GridData(SWT.CENTER, SWT.NONE, true, false));
 		topEventDesc.setText(YOUREVENT);
+		topEventDesc.setFont(font);
 		eventInfo = new Label(stateEvent, SWT.WRAP);
 		eventInfo.setLayoutData(textData);
-		
 	}
-	
-	/*
-	private void setImage() {
-		Point size = picRoom.getSize();
-		Bundle bundle = FrameworkUtil.getBundle(getClass());
-		String path = "/img/img.jpg"; // ADD IMG IN BUILD.PROPERTIES
-		URL url = FileLocator.find(bundle, new Path(path), null);
-		ImageDescriptor imageDesc = ImageDescriptor.createFromURL(url);
-		Image image = imageDesc.createImage();
-		Image resized = this.resize(image, size.x, size.y);
-		
-		picRoom.setBackgroundImage(resized);
-	}*/
 		
 	private void buildBotUI() {
-		//Point size = parent.getSize();
 		botComposite = new Composite(mainComposite, SWT.BORDER);
 		botData = new GridData(SWT.FILL, SWT.NONE, true, false);
 		botData.heightHint = 180;
@@ -281,6 +296,7 @@ public class GameViewPart {
 		Label nextRoomsLabel = new Label(nextRoomsComposite, SWT.NONE);
 		nextRoomsLabel.setLayoutData(new GridData(SWT.CENTER, SWT.NONE, true, false));
 		nextRoomsLabel.setText(NEXTROOMS);
+		nextRoomsLabel.setFont(font);
 		nextRooms = new Table(nextRoomsComposite, SWT.BORDER | SWT.V_SCROLL);
 		nextRooms.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		cards = new Composite[4];
@@ -316,6 +332,7 @@ public class GameViewPart {
 		yourDeckLabelData.horizontalSpan = 4;
 		yourDeckLabel.setLayoutData(yourDeckLabelData);
 		yourDeckLabel.setText(YOURDECK);
+		yourDeckLabel.setFont(font);
 		
 		GridData cardData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		cardData.minimumWidth = 100;
@@ -393,6 +410,7 @@ public class GameViewPart {
 		roomName.setText(CURRENTROOM + currentRoom.getName());
 		roomDesc.setText(currentRoom.getDescription());
 		this.fillNextRooms();
+		descCurrentRoom.layout();
 	}
 	
 	private void refreshCurrentEventData() {
@@ -407,6 +425,7 @@ public class GameViewPart {
 		else {
 			eventInfo.setText(currentRoom.getEvent().getInitialDescription());
 		}
+		stateEvent.layout();
 	}
 	
 	private void refreshFightData(Card c) {
@@ -441,7 +460,7 @@ public class GameViewPart {
 		fightInfos[3].setText(l3);
 	}
 	
-	private void refreshFightData() {
+	private void clearFightData() {
 		fightInfos[1].setText(EMPTY);
 		fightInfos[2].setText(EMPTY);
 		fightInfos[3].setText(EMPTY);
@@ -498,7 +517,7 @@ public class GameViewPart {
 					currentRoom = l.getNextRoom();
 					refreshCurrentRoomData();
 					refreshCurrentEventData();
-					refreshFightData();
+					clearFightData();
 				}
 			}
 		});
