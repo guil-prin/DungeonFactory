@@ -18,9 +18,14 @@ import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -28,6 +33,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -57,12 +63,13 @@ public class GameViewPart {
 	
 	private Shell shell;
 	private Composite 	parent, mainComposite, initComposite, topComposite, midComposite, botComposite, descCurrentRoom, picRoom,
-						stateEvent, centerRoom, fightRoom;
+						stateEvent, centerRoom, fightRoom, nextRoomsComposite, deckComposite;
 	private Composite[] cards;
-	private GridData midLeftData, midRightData, midCenterData, topData, midData, botData;
+	private GridData midLeftData, midRightData, midCenterData, topData, midData, botData, nextGridData;
 	private Table nextRooms;
 	private Label descChar, roomName, roomDesc, eventInfo, picLabel; 
-	private Label[] cardNames, fightInfos;
+	private Label[] cardNames, cardImg, fightInfos;
+	private Cursor nope, hand;
 	
 	private static final String PICKCHAR = "Choisir son personnage : ";
 	private static final String CHARPICKED = "Choisir ce personnage";
@@ -94,6 +101,8 @@ public class GameViewPart {
 		this.currentRoom = dungeon.getRoomById(0);
 		this.currentDeck = new ArrayList<>();
 		this.picks = new ArrayList<>();
+		nope = shell.getDisplay().getSystemCursor(SWT.CURSOR_NO);
+		hand = shell.getDisplay().getSystemCursor(SWT.CURSOR_HAND);
 		
 
 		mainComposite = new Composite(parent, SWT.BORDER);
@@ -254,8 +263,85 @@ public class GameViewPart {
 		
 		picRoom.setBackgroundImage(resized);
 	}*/
+		
+	private void buildBotUI() {
+		//Point size = parent.getSize();
+		botComposite = new Composite(mainComposite, SWT.BORDER);
+		botData = new GridData(SWT.FILL, SWT.NONE, true, false);
+		botData.heightHint = 180;
+		botComposite.setLayoutData(botData);
+		GridLayout gl = new GridLayout(3, false);
+		botComposite.setLayout(gl);		
+		
+		nextRoomsComposite = new Composite(botComposite, SWT.NONE);
+		nextGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		//nextGridData.widthHint = (int) (size.y * 0.2);
+		nextRoomsComposite.setLayoutData(nextGridData);
+		nextRoomsComposite.setLayout(new GridLayout());
+		Label nextRoomsLabel = new Label(nextRoomsComposite, SWT.NONE);
+		nextRoomsLabel.setLayoutData(new GridData(SWT.CENTER, SWT.NONE, true, false));
+		nextRoomsLabel.setText(NEXTROOMS);
+		nextRooms = new Table(nextRoomsComposite, SWT.BORDER | SWT.V_SCROLL);
+		nextRooms.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		cards = new Composite[4];
+		cardImg = new Label[4];
+		cardNames = new Label[4];
+		
+		Composite logoComposite = new Composite(botComposite, SWT.NONE);
+		GridData logoGD = new GridData(SWT.FILL, SWT.FILL, true, true);
+		logoComposite.setLayoutData(logoGD);
+		GridLayout logoGL = new GridLayout();
+		logoGL.marginWidth = 0;
+		logoGL.marginHeight = 0;
+		logoComposite.setLayout(logoGL);
+		Image img = LoadImage("logo.png");
+		Label label = new Label(logoComposite,SWT.NONE);
+		label.setLayoutData(new GridData(SWT.CENTER, SWT.NONE, true, false));
+		label.setImage(img);
+	    Canvas canvas = new Canvas(shell,SWT.NO_REDRAW_RESIZE);
+	    canvas.addPaintListener(new PaintListener() {
+	        public void paintControl(PaintEvent e) {
+	         e.gc.drawImage(img,0,0);
+	        }
+	    });
+
+		//logoComposite.setBackgroundImage(img);
+		
+		deckComposite = new Composite(botComposite, SWT.BORDER);
+		deckComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		deckComposite.setLayout(new GridLayout(4, false));
+		
+		Label yourDeckLabel = new Label(deckComposite, SWT.NONE);
+		GridData yourDeckLabelData = new GridData(SWT.CENTER, SWT.NONE, true, false);
+		yourDeckLabelData.horizontalSpan = 4;
+		yourDeckLabel.setLayoutData(yourDeckLabelData);
+		yourDeckLabel.setText(YOURDECK);
+		
+		GridData cardData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		cardData.minimumWidth = 100;
+		GridLayout glc = new GridLayout();
+		
+		for(int i = 0 ; i < 4 ; i++) {
+			cards[i] = new Composite(deckComposite, SWT.NONE);
+			cards[i].setLayoutData(cardData);
+			cards[i].setLayout(glc);
+			cardImg[i] = new Label(cards[i], SWT.NONE);
+			cardImg[i].setLayoutData(new GridData(SWT.CENTER, SWT.NONE, true, false));
+			cardNames[i] = new Label(cards[i], SWT.NONE);
+			cardNames[i].setLayoutData(new GridData(SWT.CENTER, SWT.NONE, true, false));
+			this.makeVisualCard(i);
+		}
+	}
 	
-	/*
+	private Image LoadImage(String name) {
+		Bundle bundle = FrameworkUtil.getBundle(getClass());
+		String path = "/img/" + name; // ADD IMG IN BUILD.PROPERTIES
+		URL url = FileLocator.find(bundle, new Path(path), null);
+		ImageDescriptor imageDesc = ImageDescriptor.createFromURL(url);
+		Image image = imageDesc.createImage();
+		return image;
+	}
+	
 	private Image resize(Image image, int width, int height) {
 		  Image scaled = new Image(parent.getDisplay(), width, height);
 		  GC gc = new GC(scaled);
@@ -265,32 +351,6 @@ public class GameViewPart {
 		  gc.dispose();
 		  image.dispose(); // don't forget about me!
 		  return scaled;
-	}*/
-		
-	private void buildBotUI() {
-		Point size = parent.getSize();
-		botComposite = new Composite(mainComposite, SWT.BORDER);
-		botData = new GridData(SWT.FILL, SWT.NONE, true, false);
-		botData.heightHint = (int) (size.y * 0.2);
-		botComposite.setLayoutData(botData);
-		GridLayout gl = new GridLayout(5, false);
-		botComposite.setLayout(gl);
-		
-		nextRooms = new Table(botComposite, SWT.BORDER);
-		nextRooms.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		cards = new Composite[4];
-		cardNames = new Label[4];
-
-		GridData cardData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		GridLayout glc = new GridLayout();
-		
-		for(int i = 0 ; i < 4 ; i++) {
-			cards[i] = new Composite(botComposite, SWT.BORDER);
-			cards[i].setLayoutData(cardData);
-			cards[i].setLayout(glc);
-			cardNames[i] = new Label(cards[i], SWT.NONE);
-			this.makeVisualCard(cards[i], i);
-		}
 	}
 	
 	private void fillNextRooms() {
@@ -306,11 +366,13 @@ public class GameViewPart {
 		}
 	}
 	
-	private void makeVisualCard(Composite c, int indexOfCard) {
-		c.setData("index", indexOfCard);
-		c.setData("card", currentDeck.get(indexOfCard));
+	private void makeVisualCard(int indexOfCard) {
+		cardImg[indexOfCard].setData("index", indexOfCard);
+		cardImg[indexOfCard].setData("card", currentDeck.get(indexOfCard));
 		
-		cardNames[indexOfCard].setText(currentDeck.get(indexOfCard).getName());
+		cardImg[indexOfCard].setImage(this.LoadImage("card_sized.png"));
+		cardNames[indexOfCard].setText(currentDeck.get(indexOfCard).getName() + " - " + currentDeck.get(indexOfCard).getPower());
+		
 	}
 	
 	private void initializeValues() {
@@ -412,14 +474,13 @@ public class GameViewPart {
 	}
 	
 	private void replaceCard(Integer index) {
-		Composite cardComposite = cards[index];
 		Integer newPick = (int) (Math.random() * (picks.size()-4));
 		
 		Collections.swap(picks, index, newPick + 4);
 
 		Card newCard = currentPersona.getDeck().get(picks.get(index));
 		currentDeck.set(index, newCard);
-		makeVisualCard(cardComposite, index); 
+		makeVisualCard(index); 
 	}
 
 	private void addListeners() {
@@ -451,20 +512,8 @@ public class GameViewPart {
 	        }
 	    });
 		
-		parent.addListener(SWT.Resize, new Listener() {
-			
-			@Override
-			public void handleEvent(Event event) {
-				Point size = parent.getSize();
-				
-				botData.heightHint = (int) (size.y * 0.2);
-			}
-		});
-		
 		for(int i = 0 ; i < 4 ; i++) {
-			cards[i].addMouseTrackListener(new MouseTrackListener() {
-				
-				PopupDialog popup;
+			cardImg[i].addMouseTrackListener(new MouseTrackListener() {
 				
 				@Override
 				public void mouseHover(MouseEvent e) {
@@ -472,30 +521,32 @@ public class GameViewPart {
 				
 				@Override
 				public void mouseExit(MouseEvent e) {
-					popup.close();
 				}
 				
 				@Override
 				public void mouseEnter(MouseEvent e) {
-					popup = new PopupDialog(((Composite) e.getSource()).getShell(), SWT.BORDER, false, false, false, false, false, "Description de la carte", ((Card)((Composite) e.getSource()).getData("card")).getDescriptor());
-					popup.create();
-					popup.open();
+					Label l = (Label) e.getSource();
+					l.setToolTipText(((Card) l.getData("card")).getDescriptor());
+					if(currentRoom.isRoomOpen()) {
+						l.setCursor(nope);
+					}
+					else {
+						l.setCursor(hand);
+					}
 				}
 			});
 
-			cards[i].addMouseListener(new MouseListener() {
+			cardImg[i].addMouseListener(new MouseListener() {
 				
 				@Override
 				public void mouseUp(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
 				}
 				
 				@Override
 				public void mouseDown(MouseEvent e) {
 					if(!currentRoom.isRoomOpen()) {
-						Integer index = (Integer) ((Composite) e.getSource()).getData("index");
-						Card usedCard = (Card) ((Composite) e.getSource()).getData("card");
+						Integer index = (Integer) ((Label) e.getSource()).getData("index");
+						Card usedCard = (Card) ((Label) e.getSource()).getData("card");
 						manageEvent(usedCard);
 						replaceCard(index);
 					}
@@ -508,8 +559,6 @@ public class GameViewPart {
 				
 				@Override
 				public void mouseDoubleClick(MouseEvent e) {
-					// TODO Auto-generated method stub
-					
 				}
 			});
 		}
