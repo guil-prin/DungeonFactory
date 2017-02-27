@@ -358,7 +358,12 @@ public class DungeonCreatorViewPart {
 				checkFinal.setSelection(r.isFinish());
 				roomName.setEnabled(true);
 				roomDesc.setEnabled(true);
-				checkFinal.setEnabled(true);
+				if(!checkFinal.getSelection()) {
+					checkFinal.setEnabled(!dungeon.hasOneFinalRoom());
+				}
+				else {
+					checkFinal.setEnabled(true);
+				}
 				folder.setEnabled(true);
 				this.fillTheEvent(r);
 				this.fillTheLinks(r);
@@ -464,6 +469,8 @@ public class DungeonCreatorViewPart {
 				Room currentRoom = null;
 				if(item != null) {
 					currentRoom = (Room) item.getData();
+					//tableRooms.setToolTipText(currentRoom.getDescription());
+					
 					popup = new PopupDialog(((Composite) e.getSource()).getShell(), SWT.BORDER, false, false, false, false, false, "Entrées et sorties de la salle " + currentRoom.getName(), getRoomEntrancesAndExits(currentRoom));
 					popup.create();
 					popup.open();
@@ -471,15 +478,20 @@ public class DungeonCreatorViewPart {
 			}
 			
 			private String getRoomEntrancesAndExits(Room currentRoom) {
-				String formattedString = "Entrées par : \n";
+				String formattedString = "";
 				List<Room> entrances = dungeon.getEntrancesOfRoom(currentRoom);
-				for(Room r : entrances) {
-					formattedString += r.getName() + "\n";
+				if(entrances.size() > 0) {
+					formattedString = "Entrées par : \n";
+					for(Room r : entrances) {
+						formattedString += r.getName() + "\n";
+					}
 				}
 				List<Room> exits = dungeon.getExitsOfRoom(currentRoom);
-				formattedString += "Sorties par : \n";
-				for(Room r : exits) {
-					formattedString += r.getName() + "\n";
+				if(exits.size() > 0) {
+					formattedString += "Sorties par : \n";
+					for(Room r : exits) {
+						formattedString += r.getName() + "\n";
+					}
 				}
 				return formattedString;
 			}

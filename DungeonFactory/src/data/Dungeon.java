@@ -119,4 +119,18 @@ public class Dungeon {
 		return rooms;
 	}
 	
+	public boolean hasOneFinalRoom() {
+		int numberOfFinalRooms = 0;
+		for(Room r : this.getRooms()) {
+			if(r.isFinish()) {
+				numberOfFinalRooms++;
+			}
+		}
+		if(numberOfFinalRooms == 1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 }

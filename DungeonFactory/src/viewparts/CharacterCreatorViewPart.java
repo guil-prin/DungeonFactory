@@ -220,6 +220,7 @@ public class CharacterCreatorViewPart {
         labelAdd.setText(CARDADD);
         
         textCardName = new Text(cardEdit, SWT.BORDER);
+        textCardName.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
         textCardDesc = new Text(cardEdit, SWT.BORDER);
         textCardDesc.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.FILL_HORIZONTAL));
         textCardPower = new Spinner(cardEdit, SWT.BORDER | SWT.SEARCH);
