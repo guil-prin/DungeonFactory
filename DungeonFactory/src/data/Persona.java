@@ -85,5 +85,9 @@ public class Persona {
 	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
 	}
+
+	public boolean isPersonaAlive() {
+		return this.hp > 0;
+	}
 	
 }

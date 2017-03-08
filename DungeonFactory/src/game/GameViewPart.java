@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
@@ -203,9 +204,11 @@ public class GameViewPart {
 		
 		descChar = new Label(topComposite, SWT.NONE);
 		descChar.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 1, 1));
+		//descChar.setFont(font);
 		
 		roomName = new Label(topComposite, SWT.NONE);
 		roomName.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false, 1, 1));
+		//roomName.setFont(font);
 		
 		topComposite.pack();
 	}
@@ -249,7 +252,8 @@ public class GameViewPart {
 		picRoom = new Composite(centerRoom, SWT.BORDER);
 		picRoom.setLayoutData(midCenterData);
 		picRoom.setLayout(picLayout);
-		picLabel = new Label(picRoom, SWT.NONE);
+		picLabel = new Label(picRoom, SWT.CENTER);
+		picLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		fightRoom = new Composite(centerRoom, SWT.BORDER);
 		fightRoom.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -265,7 +269,6 @@ public class GameViewPart {
 		fightInfos[3].setLayoutData(textData);
 		fightInfos[0].setText(FIGHTINFO);
 		fightInfos[0].setFont(font);
-		
 		
 		stateEvent = new Composite(midComposite, SWT.BORDER);
 		stateEvent.setLayoutData(midRightData);
@@ -396,6 +399,31 @@ public class GameViewPart {
 		
 	}
 	
+	private void setPicDamage() {
+		if(!picLabel.isVisible()) {
+			picLabel.setVisible(true);
+		}
+		Image img = picLabel.getImage();
+		if(img != null) {
+			img.dispose();
+		}
+		Image blood = this.LoadImage("bloodstain.png");
+		picLabel.setImage(blood);
+	    Canvas canvas = new Canvas(shell,SWT.NO_REDRAW_RESIZE);
+	    canvas.addPaintListener(new PaintListener() {
+	        public void paintControl(PaintEvent e) {
+	         e.gc.drawImage(blood,0,0);
+	        }
+	    });
+	}
+	
+	private void shakeWindow() {
+		for(int i = 0 ; i < 100 ; i++) {
+			shell.setBounds(shell.getBounds().x+10, shell.getBounds().y, shell.getBounds().width, shell.getBounds().height);
+			shell.setBounds(shell.getBounds().x-10, shell.getBounds().y, shell.getBounds().width, shell.getBounds().height);
+		}
+	}
+	
 	private void initializeValues() {
 		this.refreshCurrentPersonaData();
 		this.refreshCurrentRoomData();
@@ -411,6 +439,7 @@ public class GameViewPart {
 		roomDesc.setText(currentRoom.getDescription());
 		this.fillNextRooms();
 		descCurrentRoom.layout();
+		this.checkVictoryState();
 	}
 	
 	private void refreshCurrentEventData() {
@@ -447,6 +476,8 @@ public class GameViewPart {
 		if(o.getHp() > 0) {
 			if(o.getStr() > 0) {
 				l3 = "Votre ennemi riposte ! Il vous inflige " + o.getStr() + " points de dégats.";
+				this.setPicDamage();
+				this.shakeWindow();
 			}
 			else {
 				l3 = "L'obstacle se dresse toujours devant vous...";
@@ -454,10 +485,17 @@ public class GameViewPart {
 		}
 		else {
 			l3 = "Vous avez détruit ce qui vous barrait la route !";
+			Image img = picLabel.getImage();
+			if(img != null) {
+				img.dispose();
+			}
+			picLabel.setVisible(false);
 		}
 		fightInfos[1].setText(l1);
 		fightInfos[2].setText(l2);
 		fightInfos[3].setText(l3);
+		
+		this.checkVictoryState();
 	}
 	
 	private void clearFightData() {
@@ -505,6 +543,15 @@ public class GameViewPart {
 		currentDeck.set(index, newCard);
 		makeVisualCard(index); 
 	}
+	
+	private void checkVictoryState() {
+		if(currentPersona.getHp() <= 0) {
+			MessageDialog.openInformation(shell, "Vous avez été vaincu !", "Votre ennemi vous a terrassé. Recommencer ?");
+		}
+		if(currentRoom.isFinish()) {
+			MessageDialog.openInformation(shell, "Vous êtes sorti du donjon !", "Félicitations, vous avez triomphé du donjon !");
+		}
+	}
 
 	private void addListeners() {
 		nextRooms.addListener(SWT.Selection, new Listener() {
@@ -513,7 +560,7 @@ public class GameViewPart {
 			public void handleEvent(Event event) {
 				int index = nextRooms.getSelectionIndex();
 				Link l = (Link) nextRooms.getItem(index).getData();
-				if(l.isAccessible()) {
+				if(l.isAccessible() && currentPersona.isPersonaAlive()) {
 					currentRoom = l.getNextRoom();
 					refreshCurrentRoomData();
 					refreshCurrentEventData();
@@ -550,7 +597,7 @@ public class GameViewPart {
 				public void mouseEnter(MouseEvent e) {
 					Label l = (Label) e.getSource();
 					l.setToolTipText(((Card) l.getData("card")).getDescriptor());
-					if(currentRoom.isRoomOpen()) {
+					if(currentRoom.isRoomOpen() || currentPersona.getHp() <= 0) {
 						l.setCursor(nope);
 					}
 					else {
@@ -567,7 +614,7 @@ public class GameViewPart {
 				
 				@Override
 				public void mouseDown(MouseEvent e) {
-					if(!currentRoom.isRoomOpen()) {
+					if(!currentRoom.isRoomOpen() && currentPersona.isPersonaAlive()) {
 						Integer index = (Integer) ((Label) e.getSource()).getData("index");
 						Card usedCard = (Card) ((Label) e.getSource()).getData("card");
 						manageEvent(usedCard);

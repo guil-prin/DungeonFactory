@@ -15,7 +15,7 @@ public enum ModelProvider {
 	
 	private ModelProvider() {
 		dungeon = Dungeon.getInstance();
-		Persona p = new Persona("Élias de Kelliwic'h");
+		Persona p = new Persona("Merlin");
 		p.setHp(30);
 		Card c1 = new Card("Boule de feu", "Une boule de feu de force 2", 2);
 		for(int i = 0 ; i < 5 ; i++) {

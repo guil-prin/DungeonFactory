@@ -133,4 +133,35 @@ public class Dungeon {
 			return false;
 		}
 	}
+	
+	
+	/**
+	 * Checks if the dungeon is valid to play.
+	 * @return boolean if the dungeon is valid or not.
+	 */
+	public boolean isValid() {
+		boolean valid = true;
+		int sizeOfRooms = this.sizeOfRooms();
+		int sizeOfPersonas = this.sizeOfPersonas();
+		int curRoomIndex = 0;
+		int curPersonaIndex = 0;
+		
+		valid = valid && (sizeOfRooms > 0);
+		valid = valid && (sizeOfPersonas > 0);
+		valid = valid && hasOneFinalRoom();
+		
+		while(valid && curPersonaIndex < sizeOfPersonas) {
+			Persona p = this.personas.get(curPersonaIndex);
+			valid = valid && (p.sizeOfDeck() > 0);
+			curPersonaIndex++;
+		}
+		
+		while(valid && curRoomIndex < sizeOfRooms) {
+			Room r = this.rooms.get(curRoomIndex);
+			valid = valid && (getEntrancesOfRoom(r).size() > 0 || r.isStart()) && (getExitsOfRoom(r).size() > 0 || r.isFinish());
+			curRoomIndex++;
+		}
+		
+		return valid;
+	}
 }

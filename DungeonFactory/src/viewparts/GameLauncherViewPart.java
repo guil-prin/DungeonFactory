@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -25,10 +26,14 @@ import org.eclipse.swt.widgets.Listener;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 
+import data.Dungeon;
+import model.ModelProvider;
+
 public class GameLauncherViewPart {
 	
 	private Font font;
 	private Composite parent;
+	private Dungeon dungeon;
 	
 	@Inject
 	EModelService modelService;
@@ -47,6 +52,7 @@ public class GameLauncherViewPart {
 	@PostConstruct
 	public void postConstruct(Composite parent) {
 		this.parent = parent;
+		this.dungeon = ModelProvider.INSTANCE.getDungeon(); //Dungeon.getInstance();
 		this.loadFont(FONTNAME);
 		
 		Button b = new Button(parent, SWT.WRAP);	
@@ -59,12 +65,16 @@ public class GameLauncherViewPart {
 			
 			@Override
 			public void handleEvent(Event event) {
-				parent.getShell().dispose();
-				
-				MUIElement window = modelService.find("dungeonfactory.trimmedwindow.gamewindow", app);
-
-				window.setToBeRendered(true);
-				
+				if(dungeon.isValid()) {
+					parent.getShell().dispose();
+					
+					MUIElement window = modelService.find("dungeonfactory.trimmedwindow.gamewindow", app);
+	
+					window.setToBeRendered(true);
+				}
+				else {
+					MessageDialog.openError(parent.getShell(), "Erreur", "Le donjon n'est pas valide. Vérifiez qu'il y ait au moins 1 personnage avec au moins une carte, qu'il y ait une salle finale, et que chaque salle soit reliée avec une autre.");
+				}
 				//new Game(Display.getCurrent());
 			}
 		});
