@@ -91,6 +91,9 @@ public class GameViewPart {
 	private static final String EMPTY = "";
 	private static final String FONTNAME = "BLKCHCRY.TTF";
 	
+	private static final Integer RED = 87;
+	private static final Integer GREEN = 87;
+	private static final Integer BLUE = 87;
 	
 	
 	@Inject
@@ -102,6 +105,7 @@ public class GameViewPart {
 	public void postConstruct(Composite parent) {
 		this.parent = parent;
 		this.shell = parent.getShell();
+		//this.parent.setBackground(new Color(shell.getDisplay(), RED, GREEN, BLUE));
 		this.dungeon = Dungeon.getInstance();
 		//this.currentPersona = dungeon.getPersonas().get(0);
 		this.currentRoom = dungeon.getRoomById(0);
@@ -111,7 +115,7 @@ public class GameViewPart {
 		hand = shell.getDisplay().getSystemCursor(SWT.CURSOR_HAND);
 		
 
-		mainComposite = new Composite(parent, SWT.BORDER);
+		mainComposite = new Composite(parent, SWT.NONE);
 		GridData mainData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		mainComposite.setLayoutData(mainData);
 		GridLayout gl = new GridLayout();
@@ -419,8 +423,9 @@ public class GameViewPart {
 	
 	private void shakeWindow() {
 		for(int i = 0 ; i < 100 ; i++) {
-			shell.setBounds(shell.getBounds().x+10, shell.getBounds().y, shell.getBounds().width, shell.getBounds().height);
-			shell.setBounds(shell.getBounds().x-10, shell.getBounds().y, shell.getBounds().width, shell.getBounds().height);
+			picRoom.setBounds(picRoom.getBounds().x+10, picRoom.getBounds().y, picRoom.getBounds().width, picRoom.getBounds().height);
+			picRoom.setBounds(picRoom.getBounds().x-20, picRoom.getBounds().y, picRoom.getBounds().width, picRoom.getBounds().height);
+			picRoom.setBounds(picRoom.getBounds().x+10, picRoom.getBounds().y, picRoom.getBounds().width, picRoom.getBounds().height);
 		}
 	}
 	
